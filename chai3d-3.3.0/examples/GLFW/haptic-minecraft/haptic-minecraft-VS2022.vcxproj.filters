@@ -7,31 +7,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\!-lab-1\Main.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\!-lab-1\1_HelloWorld.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\2_ReadDevicePosition.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\3_BasicForceEffects.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\4_HapticWall.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\5_MagneticEffect.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\6_HapticSphere.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\!-lab-1\Assignment.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

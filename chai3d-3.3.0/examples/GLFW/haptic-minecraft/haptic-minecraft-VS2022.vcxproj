@@ -18,6 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Haptic Minecraft</ProjectName>
     <ProjectGuid>{DF4A1F32-BA3E-4604-A9F5-721CAAA9EA71}</ProjectGuid>
@@ -254,18 +257,6 @@
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\!-lab-1\Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\!-lab-1\1_HelloWorld.h" />
-    <ClInclude Include="..\!-lab-1\2_ReadDevicePosition.h" />
-    <ClInclude Include="..\!-lab-1\3_BasicForceEffects.h" />
-    <ClInclude Include="..\!-lab-1\4_HapticWall.h" />
-    <ClInclude Include="..\!-lab-1\5_MagneticEffect.h" />
-    <ClInclude Include="..\!-lab-1\6_HapticSphere.h" />
-    <ClInclude Include="..\!-lab-1\Assignment.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
