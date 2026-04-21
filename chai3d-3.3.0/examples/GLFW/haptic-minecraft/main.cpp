@@ -25,7 +25,7 @@ using namespace std;
 // stereo Mode
 /*
     C_STEREO_DISABLED:            Stereo is disabled
-    C_STEREO_ACTIVE:              Active stereo for OpenGL NVDIA QUADRO cards
+    C_STEREO_ACTIVE:              Active stereo for OpenGL NVIDIA QUADRO cards
     C_STEREO_PASSIVE_LEFT_RIGHT:  Passive stereo where L/R images are rendered next to each other
     C_STEREO_PASSIVE_TOP_BOTTOM:  Passive stereo where L/R images are rendered above each other
 */
@@ -37,49 +37,48 @@ bool fullscreen = false;
 // mirrored display
 bool mirroredDisplay = false;
 
-
 //------------------------------------------------------------------------------
 // DECLARED VARIABLES
 //------------------------------------------------------------------------------
 
 // a world that contains all objects of the virtual environment
-cWorld* world;
+cWorld *world;
 
 // a camera to render the world in the window display
-cCamera* camera;
+cCamera *camera;
 
 // a light source to illuminate the objects in the world
 cDirectionalLight *light;
 
 // a virtual object
-//cMultiMesh* object;
-//cMultiMesh* catToy;
-cMultiMesh* simple_cube;
+// cMultiMesh* object;
+// cMultiMesh* catToy;
+cMultiMesh *simple_cube;
 
 ///////////// INITIALIZE PLANE HERE ////////////
 
-  // cast a pointer for your texture plane
-//cMesh* texturePlane;
+// cast a pointer for your texture plane
+// cMesh* texturePlane;
 
 ////////////////////////////////////////////////
 
 // a haptic device handler
-cHapticDeviceHandler* handler;
+cHapticDeviceHandler *handler;
 
 // a pointer to the current haptic device
 cGenericHapticDevicePtr hapticDevice;
 
 // a virtual tool representing the haptic device in the scene
-cToolCursor* tool;
+cToolCursor *tool;
 
 // a colored background
-cBackground* background;
+cBackground *background;
 
 // a font for rendering text
 cFontPtr font;
 
 // a label to display the rate [Hz] at which the simulation is running
-cLabel* labelRates;
+cLabel *labelRates;
 
 // a flag that indicates if the haptic simulation is currently running
 bool simulationRunning = false;
@@ -102,13 +101,13 @@ cFrequencyCounter freqCounterGraphics;
 cFrequencyCounter freqCounterHaptics;
 
 // haptic thread
-cThread* hapticsThread;
+cThread *hapticsThread;
 
 // a handle to window display context
-GLFWwindow* window = NULL;
+GLFWwindow *window = NULL;
 
 // current width of window
-int width  = 0;
+int width = 0;
 
 // current height of window
 int height = 0;
@@ -122,27 +121,25 @@ string resourceRoot;
 // virtual button
 bool space_button{false};
 
-
 //------------------------------------------------------------------------------
 // DECLARED MACROS
 //------------------------------------------------------------------------------
 
 // convert to resource path
-#define RESOURCE_PATH(p)    (char*)((resourceRoot+string(p)).c_str())
-
+#define RESOURCE_PATH(p) (char *)((resourceRoot + string(p)).c_str())
 
 //------------------------------------------------------------------------------
 // DECLARED FUNCTIONS
 //------------------------------------------------------------------------------
 
 // callback when the window display is resized
-void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height);
+void windowSizeCallback(GLFWwindow *a_window, int a_width, int a_height);
 
 // callback when an error GLFW occurs
-void errorCallback(int error, const char* a_description);
+void errorCallback(int error, const char *a_description);
 
 // callback when a key is pressed
-void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods);
+void keyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, int a_mods);
 
 // callback to render graphic scene
 void updateGraphics(void);
@@ -155,7 +152,6 @@ void updateHaptics(void);
 
 // this function closes the application
 void close(void);
-
 
 //==============================================================================
 /*
@@ -174,7 +170,7 @@ void close(void);
 */
 //==============================================================================
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     //--------------------------------------------------------------------------
     // INITIALIZATION
@@ -185,8 +181,11 @@ int main(int argc, char* argv[])
     cout << "CHAI3D" << endl;
     cout << "Demo: 21-object" << endl;
     cout << "Copyright 2003-2016" << endl;
-    cout << "-----------------------------------" << endl << endl << endl;
-    cout << "Keyboard Options:" << endl << endl;
+    cout << "-----------------------------------" << endl
+         << endl
+         << endl;
+    cout << "Keyboard Options:" << endl
+         << endl;
     cout << "[1] - Texture   (ON/OFF)" << endl;
     cout << "[2] - Wireframe (ON/OFF)" << endl;
     cout << "[3] - Collision tree (ON/OFF)" << endl;
@@ -199,11 +198,11 @@ int main(int argc, char* argv[])
     cout << "[f] - Enable/Disable full screen mode" << endl;
     cout << "[m] - Enable/Disable vertical mirroring" << endl;
     cout << "[q] - Exit application" << endl;
-    cout << endl << endl;
+    cout << endl
+         << endl;
 
     // parse first arg to try and locate resources
-    resourceRoot = string(argv[0]).substr(0,string(argv[0]).find_last_of("/\\")+1);
-
+    resourceRoot = string(argv[0]).substr(0, string(argv[0]).find_last_of("/\\") + 1);
 
     //--------------------------------------------------------------------------
     // OPEN GL - WINDOW DISPLAY
@@ -221,7 +220,7 @@ int main(int argc, char* argv[])
     glfwSetErrorCallback(errorCallback);
 
     // compute desired size of window
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     int w = 0.8 * mode->height;
     int h = 0.5 * mode->height;
     int x = 0.5 * (mode->width - w);
@@ -279,7 +278,6 @@ int main(int argc, char* argv[])
     }
 #endif
 
-
     //--------------------------------------------------------------------------
     // WORLD - CAMERA - LIGHTING
     //--------------------------------------------------------------------------
@@ -294,7 +292,6 @@ int main(int argc, char* argv[])
     camera = new cCamera(world);
     world->addChild(camera);
 
-
     /*
     // define a basis in spherical coordinates for the camera
     camera->setSphericalReferences(cVector3d(0.8, 0.0, 0.5),    // origin
@@ -306,9 +303,9 @@ int main(int argc, char* argv[])
                             20);    // spherical coordinate azimuth angle
     */
     // position and orient the camera
-    camera->set( cVector3d (0.4, 0.0, 0.2),    // camera position (eye)
-                 cVector3d (0.0, 0.0, 0.0),    // lookat position (target)
-                 cVector3d (0.0, 0.0, 1.0));   // direction of the (up) vector
+    camera->set(cVector3d(0.4, 0.0, 0.2),  // camera position (eye)
+                cVector3d(0.0, 0.0, 0.0),  // look at position (target)
+                cVector3d(0.0, 0.0, 1.0)); // direction of the (up) vector
 
     // set the near and far clipping planes of the camera
     // anything in front or behind these clipping planes will not be rendered
@@ -337,13 +334,12 @@ int main(int argc, char* argv[])
     light->setEnabled(true);
 
     // define the direction of the light beam
-    light->setDir(-3.0,-0.5, 0.0);
+    light->setDir(-3.0, -0.5, 0.0);
 
     // set lighting conditions
     light->m_ambient.set(0.4f, 0.4f, 0.4f);
     light->m_diffuse.set(0.8f, 0.8f, 0.8f);
     light->m_specular.set(1.0f, 1.0f, 1.0f);
-
 
     //--------------------------------------------------------------------------
     // HAPTIC DEVICES / TOOLS
@@ -369,12 +365,12 @@ int main(int argc, char* argv[])
     hapticDevice->setEnableGripperUserSwitch(true);
 
     /////////// ADJUST VALUES HERE ///////////
-    
+
     // define the radius of the tool (sphere)
     double toolRadius = 0.01;
 
     //////////////////////////////////////////
-    // 
+    //
     // define a radius for the tool
     tool->setRadius(toolRadius);
 
@@ -398,7 +394,6 @@ int main(int argc, char* argv[])
     // start the haptic tool
     tool->start();
 
-
     //--------------------------------------------------------------------------
     // CREATE OBJECT
     //--------------------------------------------------------------------------
@@ -408,118 +403,96 @@ int main(int argc, char* argv[])
     double workspaceScaleFactor = tool->getWorkspaceScaleFactor();
 
     // stiffness properties
-    double maxStiffness	= hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
+    double maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
 
     // create a virtual mesh
-    //object = new cMultiMesh();
-    //catToy = new cMultiMesh();
+    // object = new cMultiMesh();
+    // catToy = new cMultiMesh();
     simple_cube = new cMultiMesh();
 
-
-
     // add object to world
-    //world->addChild(object);
-    //world->addChild(catToy);
+    // world->addChild(object);
+    // world->addChild(catToy);
     world->addChild(simple_cube);
 
     // load an object file
     bool fileload;
 
+    /////////// CREATE AND ADD PLANE HERE ///////////////
+    //    // create a mesh
+    //    texturePlane = new cMesh();
+    //
+    //    // create plane
+    //    cCreatePlane(texturePlane, 0.3, 0.3);
+    //
+    //    // create collision detector
+    //    texturePlane->createAABBCollisionDetector(toolRadius);
+    //
+    //    // add object to world
+    //    //world->addChild(texturePlane);
+    //
+    //    texturePlane->m_texture = cTexture2d::create();
+    //    fileload = texturePlane->m_texture->loadFromFile(RESOURCE_PATH("./Textures/test.jpg"));
+    //    if (!fileload)
+    //    {
+    // #if defined(_MSVC)
+    //        fileload = texturePlane->m_texture->loadFromFile("./Textures/test.jpg");
+    // #endif
+    //    }
+    //    if (!fileload)
+    //    {
+    //        cout << "Error - Texture image failed to load correctly." << endl;
+    //        close();
+    //        return (-1);
+    //    }
+    //
+    //    // enable texture mapping
+    //    texturePlane->setUseTexture(true);
+    //    texturePlane->m_material->setWhite();
+    //
+    //    // create normal map from texture data
+    //    cNormalMapPtr normalMap0 = cNormalMap::create();
+    //    normalMap0->createMap(texturePlane->m_texture);
+    //    texturePlane->m_normalMap = normalMap0;
+    //
+    //    // set haptic properties
+    //    texturePlane->m_material->setStiffness(0.8 * maxStiffness);
+    //    texturePlane->m_material->setStaticFriction(0.3);
+    //    texturePlane->m_material->setDynamicFriction(0.2);
+    //    texturePlane->m_material->setTextureLevel(1.0);
+    //    texturePlane->m_material->setHapticTriangleSides(true, false);
+    //
+    //
 
-/////////// CREATE AND ADD PLANE HERE ///////////////
-//    // create a mesh
-//    texturePlane = new cMesh();
-//
-//    // create plane
-//    cCreatePlane(texturePlane, 0.3, 0.3);
-//
-//    // create collision detector
-//    texturePlane->createAABBCollisionDetector(toolRadius);
-//
-//    // add object to world
-//    //world->addChild(texturePlane);
-//
-//    texturePlane->m_texture = cTexture2d::create();
-//    fileload = texturePlane->m_texture->loadFromFile(RESOURCE_PATH("./Textures/test.jpg"));
-//    if (!fileload)
-//    {
-//#if defined(_MSVC)
-//        fileload = texturePlane->m_texture->loadFromFile("./Textures/test.jpg");
-//#endif
-//    }
-//    if (!fileload)
-//    {
-//        cout << "Error - Texture image failed to load correctly." << endl;
-//        close();
-//        return (-1);
-//    }
-//
-//    // enable texture mapping
-//    texturePlane->setUseTexture(true);
-//    texturePlane->m_material->setWhite();
-//
-//    // create normal map from texture data
-//    cNormalMapPtr normalMap0 = cNormalMap::create();
-//    normalMap0->createMap(texturePlane->m_texture);
-//    texturePlane->m_normalMap = normalMap0;
-//
-//    // set haptic properties
-//    texturePlane->m_material->setStiffness(0.8 * maxStiffness);
-//    texturePlane->m_material->setStaticFriction(0.3);
-//    texturePlane->m_material->setDynamicFriction(0.2);
-//    texturePlane->m_material->setTextureLevel(1.0);
-//    texturePlane->m_material->setHapticTriangleSides(true, false);
-//
-//
+    /////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////
+    /* fileload = catToy->loadFromFile("./Models/bird.obj");
+     if (!fileload)
+     {
+ #if defined(_MSVC)
+         fileload = catToy->loadFromFile("./Models/bird.obj");
+ #endif
+     }
+     if (!fileload)
+     {
+         cout << "Error - 3D Model failed to load correctly" << endl;
+         close();
+         return (-1);
+     }*/
 
-
-   /* fileload = object->loadFromFile("./Models/katt3.obj");
-    if (!fileload)
-    {
-        #if defined(_MSVC)
-        fileload = object->loadFromFile("./Models/katt3.obj");
-        #endif
-    }
-    if (!fileload)
-    {
-        cout << "Error - 3D Model failed to load correctly" << endl;
-        close();
-        return (-1);
-    }*/
-
-   /* fileload = catToy->loadFromFile("./Models/bird.obj");
-    if (!fileload)
-    {
-#if defined(_MSVC)
-        fileload = catToy->loadFromFile("./Models/bird.obj");
-#endif
-    }
-    if (!fileload)
-    {
-        cout << "Error - 3D Model failed to load correctly" << endl;
-        close();
-        return (-1);
-    }*/
-
-    
-//    fileload = catToy->loadFromFile("./Models/bird.obj");
-//    if (!fileload)
-//    {
-//#if defined(_MSVC)
-//        fileload = catToy->loadFromFile("./Models/bird.obj");
-//#endif
-//    }
-//    if (!fileload)
-//    {
-//        cout << "Error - 3D Model failed to load correctly" << endl;
-//        close();
-//        return (-1);
-//    }
-
-
-
+    //    fileload = catToy->loadFromFile("./Models/bird.obj");
+    //    if (!fileload)
+    //    {
+    // #if defined(_MSVC)
+    //        fileload = catToy->loadFromFile("./Models/bird.obj");
+    // #endif
+    //    }
+    //    if (!fileload)
+    //    {
+    //        cout << "Error - 3D Model failed to load correctly" << endl;
+    //        close();
+    //        return (-1);
+    //    }
 
     fileload = simple_cube->loadFromFile("./Models/Block_simple.obj");
     if (!fileload)
@@ -539,23 +512,21 @@ int main(int argc, char* argv[])
 
     double size;
 
-    //double size = cSub(object->getBoundaryMax(), object->getBoundaryMin()).length();
+    // double size = cSub(object->getBoundaryMax(), object->getBoundaryMin()).length();
 
     //// resize object to screen
-    //if (size > 0.001)
+    // if (size > 0.001)
     //{
-    //    object->scale(0.4 / size);
-    //}
+    //     object->scale(0.4 / size);
+    // }
 
-    //size = cSub(catToy->getBoundaryMax(), catToy->getBoundaryMin()).length();
+    // size = cSub(catToy->getBoundaryMax(), catToy->getBoundaryMin()).length();
 
     //// resize object to screen
-    //if (size > 0.001)
+    // if (size > 0.001)
     //{
-    //    catToy->scale(0.2 / size);
-    //}
-
-
+    //     catToy->scale(0.2 / size);
+    // }
 
     size = cSub(simple_cube->getBoundaryMax(), simple_cube->getBoundaryMin()).length();
 
@@ -565,36 +536,31 @@ int main(int argc, char* argv[])
         simple_cube->scale(0.2 / size);
     }
 
-
-
-    //cMaterial m;
+    // cMaterial m;
     ////m.setBlueCadet();
-    //m.setPurpleAmethyst();
-    //object->setMaterial(m);
+    // m.setPurpleAmethyst();
+    // object->setMaterial(m);
     //// disable culling so that faces are rendered on both sides
-    //object->setUseCulling(false);
+    // object->setUseCulling(false);
 
     //// compute a boundary box
-    //object->computeBoundaryBox(true);
+    // object->computeBoundaryBox(true);
     //// show/hide boundary box
-    //object->setShowBoundaryBox(false);
+    // object->setShowBoundaryBox(false);
 
-
-    //cTexture2dPtr birdM = cTexture2d::create();
-    //fileload = birdM->loadFromFile("./Models/bird_diffuse.jpg");
-    //catToy->m_material->setWhite();
-    //catToy->setTexture(birdM);
-    //catToy->setUseTexture(true, true);
-    //catToy->setUseMaterial(true, true);
+    // cTexture2dPtr birdM = cTexture2d::create();
+    // fileload = birdM->loadFromFile("./Models/bird_diffuse.jpg");
+    // catToy->m_material->setWhite();
+    // catToy->setTexture(birdM);
+    // catToy->setUseTexture(true, true);
+    // catToy->setUseMaterial(true, true);
     //// disable culling so that faces are rendered on both sides
-    //catToy->setUseCulling(false);
+    // catToy->setUseCulling(false);
 
     //// compute a boundary box
-    //catToy->computeBoundaryBox(true);
+    // catToy->computeBoundaryBox(true);
     //// show/hide boundary box
-    //catToy->setShowBoundaryBox(false);
-
-
+    // catToy->setShowBoundaryBox(false);
 
     cTexture2dPtr dirtM = cTexture2d::create();
     fileload = dirtM->loadFromFile("./Textures/dirt.png");
@@ -616,73 +582,70 @@ int main(int argc, char* argv[])
 
     /////////// ADJUST VALUES HERE ///////////
 
-
     // compute collision detection algorithm
-    //object->createAABBCollisionDetector(toolRadius);
-    //catToy->createAABBCollisionDetector(toolRadius);
+    // object->createAABBCollisionDetector(toolRadius);
+    // catToy->createAABBCollisionDetector(toolRadius);
     simple_cube->createAABBCollisionDetector(toolRadius);
-   // object->createBruteForceCollisionDetector();
+    // object->createBruteForceCollisionDetector();
 
     // define a default stiffness for the object
-    //object->setStiffness(0.2 * maxStiffness, true);
-    //catToy->setStiffness(0.2 * maxStiffness, true);
+    // object->setStiffness(0.2 * maxStiffness, true);
+    // catToy->setStiffness(0.2 * maxStiffness, true);
     simple_cube->setStiffness(0.2 * maxStiffness, true);
 
     // define some haptic friction properties, First argument is Static Friction, Second is Dynamic Friction
-    //object->setFriction(0.1, 0.2, true);
-    //catToy->setFriction(0.1, 0.2, true);
+    // object->setFriction(0.1, 0.2, true);
+    // catToy->setFriction(0.1, 0.2, true);
     simple_cube->setFriction(0.1, 0.2, true);
-    
-    //object->setFriction(10.0, 0.0, true);
+
+    // object->setFriction(10.0, 0.0, true);
 
     //////////////////////////////////////////
 
     // enable display list for faster graphic rendering
-    //object->setUseDisplayList(true);
-    //catToy->setUseDisplayList(true);
+    // object->setUseDisplayList(true);
+    // catToy->setUseDisplayList(true);
     simple_cube->setUseDisplayList(true);
 
     // center object in scene
-    //object->setLocalPos(-1.0 * object->getBoundaryCenter());
-    //catToy->setLocalPos(-1.0 * object->getBoundaryCenter());
+    // object->setLocalPos(-1.0 * object->getBoundaryCenter());
+    // catToy->setLocalPos(-1.0 * object->getBoundaryCenter());
     simple_cube->setLocalPos(-1.0 * simple_cube->getBoundaryCenter());
 
     // rotate object in scene
-    //object->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
+    // object->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
 
-    //catToy->rotateExtrinsicEulerAnglesDeg(0, 0, 180, C_EULER_ORDER_XYZ);
-
+    // catToy->rotateExtrinsicEulerAnglesDeg(0, 0, 180, C_EULER_ORDER_XYZ);
 
     // compute all edges of object for which adjacent triangles have more than 40 degree angle
-    //object->computeAllEdges(0);
-    //catToy->computeAllEdges(0);
+    // object->computeAllEdges(0);
+    // catToy->computeAllEdges(0);
     simple_cube->computeAllEdges(0);
 
     // set line width of edges and color
     cColorf colorEdges;
     colorEdges.setBlack();
-    //object->setEdgeProperties(1, colorEdges);
-    //catToy->setEdgeProperties(1, colorEdges);
+    // object->setEdgeProperties(1, colorEdges);
+    // catToy->setEdgeProperties(1, colorEdges);
     simple_cube->setEdgeProperties(1, colorEdges);
 
     // set normal properties for display
     cColorf colorNormals;
     colorNormals.setOrangeTomato();
-    //object->setNormalsProperties(0.01, colorNormals);
-    //catToy->setNormalsProperties(0.01, colorNormals);
+    // object->setNormalsProperties(0.01, colorNormals);
+    // catToy->setNormalsProperties(0.01, colorNormals);
     simple_cube->setNormalsProperties(0.01, colorNormals);
 
     // display options
-    //object->setShowTriangles(showTriangles);
-    //object->setShowEdges(showEdges);
-    //object->setShowNormals(showNormals);
-    //catToy->setShowTriangles(showTriangles);
-    //catToy->setShowEdges(showEdges);
-    //catToy->setShowNormals(showNormals);
+    // object->setShowTriangles(showTriangles);
+    // object->setShowEdges(showEdges);
+    // object->setShowNormals(showNormals);
+    // catToy->setShowTriangles(showTriangles);
+    // catToy->setShowEdges(showEdges);
+    // catToy->setShowNormals(showNormals);
     simple_cube->setShowTriangles(showTriangles);
     simple_cube->setShowEdges(showEdges);
     simple_cube->setShowNormals(showNormals);
-
 
     //--------------------------------------------------------------------------
     // WIDGETS
@@ -706,7 +669,6 @@ int main(int argc, char* argv[])
                                 cColorf(0.80f, 0.80f, 0.80f),
                                 cColorf(0.80f, 0.80f, 0.80f));
 
-
     //--------------------------------------------------------------------------
     // START SIMULATION
     //--------------------------------------------------------------------------
@@ -717,7 +679,6 @@ int main(int argc, char* argv[])
 
     // setup callback when application exits
     atexit(close);
-
 
     //--------------------------------------------------------------------------
     // MAIN GRAPHIC LOOP
@@ -757,23 +718,23 @@ int main(int argc, char* argv[])
 
 //------------------------------------------------------------------------------
 
-void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
+void windowSizeCallback(GLFWwindow *a_window, int a_width, int a_height)
 {
     // update window size
-    width  = a_width;
+    width = a_width;
     height = a_height;
 }
 
 //------------------------------------------------------------------------------
 
-void errorCallback(int a_error, const char* a_description)
+void errorCallback(int a_error, const char *a_description)
 {
     cout << "Error: " << a_description << endl;
 }
 
 //------------------------------------------------------------------------------
 
-void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods)
+void keyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, int a_mods)
 {
     // filter calls that only include a key press
     if ((a_action != GLFW_PRESS) && (a_action != GLFW_REPEAT))
@@ -781,7 +742,8 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
         return;
     }
 
-    else if(a_key == GLFW_KEY_SPACE){
+    else if (a_key == GLFW_KEY_SPACE)
+    {
         space_button = !space_button;
     }
 
@@ -799,39 +761,39 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
     }*/
 
     // option - enable/disable wire mode
-  /*  else if (a_key == GLFW_KEY_2)
-    {
-        bool useWireMode = object->getWireMode();
-        object->setWireMode(!useWireMode, true);
-    }*/
+    /*  else if (a_key == GLFW_KEY_2)
+      {
+          bool useWireMode = object->getWireMode();
+          object->setWireMode(!useWireMode, true);
+      }*/
 
     // option - show/hide collision detection tree
-   /* else if (a_key == GLFW_KEY_3)
-    {
-        cColorf color = cColorf(1.0, 0.0, 0.0);
-        object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-        bool show = object->getShowCollisionDetector();
-        object->setShowCollisionDetector(!show, true);
-    }*/
+    /* else if (a_key == GLFW_KEY_3)
+     {
+         cColorf color = cColorf(1.0, 0.0, 0.0);
+         object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
+         bool show = object->getShowCollisionDetector();
+         object->setShowCollisionDetector(!show, true);
+     }*/
 
     // option - decrease depth level of collision tree
-   /* else if (a_key == GLFW_KEY_4)
-    {
-        collisionTreeDisplayLevel--;
-        if (collisionTreeDisplayLevel < 0) { collisionTreeDisplayLevel = 0; }
-        cColorf color = cColorf(1.0, 0.0, 0.0);
-        object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-        object->setShowCollisionDetector(true, true);
-    }*/
+    /* else if (a_key == GLFW_KEY_4)
+     {
+         collisionTreeDisplayLevel--;
+         if (collisionTreeDisplayLevel < 0) { collisionTreeDisplayLevel = 0; }
+         cColorf color = cColorf(1.0, 0.0, 0.0);
+         object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
+         object->setShowCollisionDetector(true, true);
+     }*/
 
     // option - increase depth level of collision tree
-  /*  else if (a_key == GLFW_KEY_5)
-    {
-        collisionTreeDisplayLevel++;
-        cColorf color = cColorf(1.0, 0.0, 0.0);
-        object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-        object->setShowCollisionDetector(true, true);
-    }*/
+    /*  else if (a_key == GLFW_KEY_5)
+      {
+          collisionTreeDisplayLevel++;
+          cColorf color = cColorf(1.0, 0.0, 0.0);
+          object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
+          object->setShowCollisionDetector(true, true);
+      }*/
 
     // option - save screenshot to file
     else if (a_key == GLFW_KEY_S)
@@ -843,25 +805,25 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
     }
 
     // option - show/hide triangles
-  /*  else if (a_key == GLFW_KEY_T)
-    {
-        showTriangles = !showTriangles;
-        object->setShowTriangles(showTriangles);
-    }*/
+    /*  else if (a_key == GLFW_KEY_T)
+      {
+          showTriangles = !showTriangles;
+          object->setShowTriangles(showTriangles);
+      }*/
 
     // option - show/hide edges
-   /* else if (a_key == GLFW_KEY_E)
-    {
-        showEdges = !showEdges;
-        object->setShowEdges(showEdges);
-    }*/
+    /* else if (a_key == GLFW_KEY_E)
+     {
+         showEdges = !showEdges;
+         object->setShowEdges(showEdges);
+     }*/
 
     // option - show/hide normals
-  /*  else if (a_key == GLFW_KEY_N)
-    {
-        showNormals = !showNormals;
-        object->setShowNormals(showNormals);
-    }*/
+    /*  else if (a_key == GLFW_KEY_N)
+      {
+          showNormals = !showNormals;
+          object->setShowNormals(showNormals);
+      }*/
 
     // option - toggle fullscreen
     else if (a_key == GLFW_KEY_F)
@@ -870,10 +832,10 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
         fullscreen = !fullscreen;
 
         // get handle to monitor
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 
         // get information about monitor
-        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
 
         // set fullscreen or window mode
         if (fullscreen)
@@ -908,7 +870,10 @@ void close(void)
     simulationRunning = false;
 
     // wait for graphics and haptics loops to terminate
-    while (!simulationFinished) { cSleepMs(100); }
+    while (!simulationFinished)
+    {
+        cSleepMs(100);
+    }
 
     // close haptic device
     tool->stop();
@@ -929,11 +894,10 @@ void updateGraphics(void)
 
     // update haptic and graphic rate data
     labelRates->setText(cStr(freqCounterGraphics.getFrequency(), 0) + " Hz / " +
-        cStr(freqCounterHaptics.getFrequency(), 0) + " Hz");
+                        cStr(freqCounterHaptics.getFrequency(), 0) + " Hz");
 
     // update position of label
     labelRates->setLocalPos((int)(0.5 * (width - labelRates->getWidth())), 15);
-
 
     /////////////////////////////////////////////////////////////////////
     // RENDER SCENE
@@ -950,7 +914,8 @@ void updateGraphics(void)
 
     // check for any OpenGL errors
     GLenum err = glGetError();
-    if (err != GL_NO_ERROR) cout << "Error: " << gluErrorString(err) << endl;
+    if (err != GL_NO_ERROR)
+        cout << "Error: " << gluErrorString(err) << endl;
 }
 
 //------------------------------------------------------------------------------
@@ -964,15 +929,15 @@ enum cMode
 void updateHaptics(void)
 {
     cMode state = IDLE;
-    cGenericObject* selectedObject = NULL;
+    cGenericObject *selectedObject = NULL;
     cTransform tool_T_object;
 
     // simulation in now running
-    simulationRunning  = true;
+    simulationRunning = true;
     simulationFinished = false;
 
     // main haptic simulation loop
-    while(simulationRunning)
+    while (simulationRunning)
     {
         /////////////////////////////////////////////////////////////////////////
         // HAPTIC RENDERING
@@ -989,7 +954,6 @@ void updateHaptics(void)
 
         // compute interaction forces
         tool->computeInteractionForces();
-
 
         /////////////////////////////////////////////////////////////////////////
         // MANIPULATION
@@ -1011,14 +975,14 @@ void updateHaptics(void)
             if (tool->m_hapticPoint->getNumCollisionEvents() > 0)
             {
                 // get contact event
-                cCollisionEvent* collisionEvent = tool->m_hapticPoint->getCollisionEvent(0);
+                cCollisionEvent *collisionEvent = tool->m_hapticPoint->getCollisionEvent(0);
 
                 // get object from contact event
                 selectedObject = collisionEvent->m_object;
             }
             else
             {
-                //selectedObject = object;
+                // selectedObject = object;
             }
 
             // get transformation from object
@@ -1034,7 +998,6 @@ void updateHaptics(void)
             // update state
             state = SELECTION;
         }
-
 
         //
         // STATE 2:
@@ -1054,7 +1017,7 @@ void updateHaptics(void)
             selectedObject->setLocalTransform(parent_T_object);
 
             // set zero forces when manipulating objects
-            //tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
+            // tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
             tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
 
             tool->initialize();
@@ -1069,7 +1032,6 @@ void updateHaptics(void)
             state = IDLE;
         }
 
-
         /////////////////////////////////////////////////////////////////////////
         // FINALIZE
         /////////////////////////////////////////////////////////////////////////
@@ -1083,8 +1045,6 @@ void updateHaptics(void)
 }
 
 //------------------------------------------------------------------------------
-
-
 
 //==============================================================================
 /*
@@ -1131,10 +1091,3 @@ void updateHaptics(void)
     \version   3.2.0 $Rev: 2049 $
 */
 //==============================================================================
-
-
-
-
-
-
-
