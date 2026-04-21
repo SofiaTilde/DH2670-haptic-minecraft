@@ -1,22 +1,8 @@
-/*
- *
- *
- *    DH2660 Haptic Programming spring 2017
- *    Lab 2 Template directly based on Chai3D Example 21.
- *
- *    Distribution license: BSD (e.g. free to use for
- *    most purposes, see end of file)
- *
- */
-
-//------------------------------------------------------------------------------
 #include "chai3d.h"
-//------------------------------------------------------------------------------
 #include <GLFW/glfw3.h>
-//------------------------------------------------------------------------------
+
 using namespace chai3d;
 using namespace std;
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // GENERAL SETTINGS
@@ -54,13 +40,6 @@ cDirectionalLight *light;
 // cMultiMesh* object;
 // cMultiMesh* catToy;
 cMultiMesh *simple_cube;
-
-///////////// INITIALIZE PLANE HERE ////////////
-
-// cast a pointer for your texture plane
-// cMesh* texturePlane;
-
-////////////////////////////////////////////////
 
 // a haptic device handler
 cHapticDeviceHandler *handler;
@@ -152,23 +131,6 @@ void updateHaptics(void);
 
 // this function closes the application
 void close(void);
-
-//==============================================================================
-/*
-    DEMO:   21-object.cpp
-
-    This demonstration loads a 3D mesh file by using the file loader
-    functionality of the \ref cMultiMesh class. A finger-proxy algorithm is
-    used to render the forces. Take a look at this example to understand the
-    different functionalities offered by the tool force renderer.
-
-    In the main haptics loop function  "updateHaptics()" , the position
-    of the haptic device is retrieved at each simulation iteration.
-    The interaction forces are then computed and sent to the device.
-    Finally, a simple dynamics model is used to simulate the behavior
-    of the object.
-*/
-//==============================================================================
 
 int main(int argc, char *argv[])
 {
@@ -406,93 +368,13 @@ int main(int argc, char *argv[])
     double maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
 
     // create a virtual mesh
-    // object = new cMultiMesh();
-    // catToy = new cMultiMesh();
     simple_cube = new cMultiMesh();
 
     // add object to world
-    // world->addChild(object);
-    // world->addChild(catToy);
     world->addChild(simple_cube);
 
     // load an object file
     bool fileload;
-
-    /////////// CREATE AND ADD PLANE HERE ///////////////
-    //    // create a mesh
-    //    texturePlane = new cMesh();
-    //
-    //    // create plane
-    //    cCreatePlane(texturePlane, 0.3, 0.3);
-    //
-    //    // create collision detector
-    //    texturePlane->createAABBCollisionDetector(toolRadius);
-    //
-    //    // add object to world
-    //    //world->addChild(texturePlane);
-    //
-    //    texturePlane->m_texture = cTexture2d::create();
-    //    fileload = texturePlane->m_texture->loadFromFile(RESOURCE_PATH("./Textures/test.jpg"));
-    //    if (!fileload)
-    //    {
-    // #if defined(_MSVC)
-    //        fileload = texturePlane->m_texture->loadFromFile("./Textures/test.jpg");
-    // #endif
-    //    }
-    //    if (!fileload)
-    //    {
-    //        cout << "Error - Texture image failed to load correctly." << endl;
-    //        close();
-    //        return (-1);
-    //    }
-    //
-    //    // enable texture mapping
-    //    texturePlane->setUseTexture(true);
-    //    texturePlane->m_material->setWhite();
-    //
-    //    // create normal map from texture data
-    //    cNormalMapPtr normalMap0 = cNormalMap::create();
-    //    normalMap0->createMap(texturePlane->m_texture);
-    //    texturePlane->m_normalMap = normalMap0;
-    //
-    //    // set haptic properties
-    //    texturePlane->m_material->setStiffness(0.8 * maxStiffness);
-    //    texturePlane->m_material->setStaticFriction(0.3);
-    //    texturePlane->m_material->setDynamicFriction(0.2);
-    //    texturePlane->m_material->setTextureLevel(1.0);
-    //    texturePlane->m_material->setHapticTriangleSides(true, false);
-    //
-    //
-
-    /////////////////////////////////////////////////////
-
-    /* fileload = catToy->loadFromFile("./Models/bird.obj");
-     if (!fileload)
-     {
- #if defined(_MSVC)
-         fileload = catToy->loadFromFile("./Models/bird.obj");
- #endif
-     }
-     if (!fileload)
-     {
-         cout << "Error - 3D Model failed to load correctly" << endl;
-         close();
-         return (-1);
-     }*/
-
-    //    fileload = catToy->loadFromFile("./Models/bird.obj");
-    //    if (!fileload)
-    //    {
-    // #if defined(_MSVC)
-    //        fileload = catToy->loadFromFile("./Models/bird.obj");
-    // #endif
-    //    }
-    //    if (!fileload)
-    //    {
-    //        cout << "Error - 3D Model failed to load correctly" << endl;
-    //        close();
-    //        return (-1);
-    //    }
 
     fileload = simple_cube->loadFromFile("./Models/Block_simple.obj");
     if (!fileload)
@@ -512,22 +394,6 @@ int main(int argc, char *argv[])
 
     double size;
 
-    // double size = cSub(object->getBoundaryMax(), object->getBoundaryMin()).length();
-
-    //// resize object to screen
-    // if (size > 0.001)
-    //{
-    //     object->scale(0.4 / size);
-    // }
-
-    // size = cSub(catToy->getBoundaryMax(), catToy->getBoundaryMin()).length();
-
-    //// resize object to screen
-    // if (size > 0.001)
-    //{
-    //     catToy->scale(0.2 / size);
-    // }
-
     size = cSub(simple_cube->getBoundaryMax(), simple_cube->getBoundaryMin()).length();
 
     // resize object to screen
@@ -535,32 +401,6 @@ int main(int argc, char *argv[])
     {
         simple_cube->scale(0.2 / size);
     }
-
-    // cMaterial m;
-    ////m.setBlueCadet();
-    // m.setPurpleAmethyst();
-    // object->setMaterial(m);
-    //// disable culling so that faces are rendered on both sides
-    // object->setUseCulling(false);
-
-    //// compute a boundary box
-    // object->computeBoundaryBox(true);
-    //// show/hide boundary box
-    // object->setShowBoundaryBox(false);
-
-    // cTexture2dPtr birdM = cTexture2d::create();
-    // fileload = birdM->loadFromFile("./Models/bird_diffuse.jpg");
-    // catToy->m_material->setWhite();
-    // catToy->setTexture(birdM);
-    // catToy->setUseTexture(true, true);
-    // catToy->setUseMaterial(true, true);
-    //// disable culling so that faces are rendered on both sides
-    // catToy->setUseCulling(false);
-
-    //// compute a boundary box
-    // catToy->computeBoundaryBox(true);
-    //// show/hide boundary box
-    // catToy->setShowBoundaryBox(false);
 
     cTexture2dPtr dirtM = cTexture2d::create();
     fileload = dirtM->loadFromFile("./Textures/dirt.png");
@@ -583,66 +423,38 @@ int main(int argc, char *argv[])
     /////////// ADJUST VALUES HERE ///////////
 
     // compute collision detection algorithm
-    // object->createAABBCollisionDetector(toolRadius);
-    // catToy->createAABBCollisionDetector(toolRadius);
     simple_cube->createAABBCollisionDetector(toolRadius);
-    // object->createBruteForceCollisionDetector();
 
     // define a default stiffness for the object
-    // object->setStiffness(0.2 * maxStiffness, true);
-    // catToy->setStiffness(0.2 * maxStiffness, true);
     simple_cube->setStiffness(0.2 * maxStiffness, true);
 
     // define some haptic friction properties, First argument is Static Friction, Second is Dynamic Friction
-    // object->setFriction(0.1, 0.2, true);
-    // catToy->setFriction(0.1, 0.2, true);
     simple_cube->setFriction(0.1, 0.2, true);
-
-    // object->setFriction(10.0, 0.0, true);
 
     //////////////////////////////////////////
 
     // enable display list for faster graphic rendering
-    // object->setUseDisplayList(true);
-    // catToy->setUseDisplayList(true);
     simple_cube->setUseDisplayList(true);
 
     // center object in scene
-    // object->setLocalPos(-1.0 * object->getBoundaryCenter());
-    // catToy->setLocalPos(-1.0 * object->getBoundaryCenter());
     simple_cube->setLocalPos(-1.0 * simple_cube->getBoundaryCenter());
 
     // rotate object in scene
-    // object->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
-
-    // catToy->rotateExtrinsicEulerAnglesDeg(0, 0, 180, C_EULER_ORDER_XYZ);
-
+    // simple_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
     // compute all edges of object for which adjacent triangles have more than 40 degree angle
-    // object->computeAllEdges(0);
-    // catToy->computeAllEdges(0);
     simple_cube->computeAllEdges(0);
 
     // set line width of edges and color
     cColorf colorEdges;
     colorEdges.setBlack();
-    // object->setEdgeProperties(1, colorEdges);
-    // catToy->setEdgeProperties(1, colorEdges);
     simple_cube->setEdgeProperties(1, colorEdges);
 
     // set normal properties for display
     cColorf colorNormals;
     colorNormals.setOrangeTomato();
-    // object->setNormalsProperties(0.01, colorNormals);
-    // catToy->setNormalsProperties(0.01, colorNormals);
     simple_cube->setNormalsProperties(0.01, colorNormals);
 
     // display options
-    // object->setShowTriangles(showTriangles);
-    // object->setShowEdges(showEdges);
-    // object->setShowNormals(showNormals);
-    // catToy->setShowTriangles(showTriangles);
-    // catToy->setShowEdges(showEdges);
-    // catToy->setShowNormals(showNormals);
     simple_cube->setShowTriangles(showTriangles);
     simple_cube->setShowEdges(showEdges);
     simple_cube->setShowNormals(showNormals);
