@@ -22,8 +22,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assignment.h" />
-    <ClInclude Include="SimpleBlocks.h" />
+    <ClInclude Include="Blocks.h" />
+    <ClInclude Include="BlockSetup.h" />
+    <ClInclude Include="GlobalVariables.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Haptic Minecraft</ProjectName>

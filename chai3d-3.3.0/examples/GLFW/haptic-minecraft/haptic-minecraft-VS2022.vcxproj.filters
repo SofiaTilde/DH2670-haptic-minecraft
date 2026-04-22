@@ -12,10 +12,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SimpleBlocks.h">
+    <ClInclude Include="BlockSetup.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Assignment.h">
+    <ClInclude Include="Blocks.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVariables.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

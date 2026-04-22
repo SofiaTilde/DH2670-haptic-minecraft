@@ -1,9 +1,7 @@
 #include "chai3d.h"
 #include <GLFW/glfw3.h>
 
-//#include "Assignment.h"
-#include "SimpleBlocks.h"
-//#include "GlobalVariables.h"
+#include "Blocks.h"
 
 using namespace chai3d;
 using namespace std;
@@ -154,7 +152,11 @@ int main(int argc, char *argv[])
          << endl;
     cout << "[q] - Exit application" << endl;
     cout << "[w] - Enable/Disable vertical mirroring" << endl;
-    cout << "[e] - Enable/Disable full screen mode" << endl;
+    cout << "[e] - Enable/Disable full screen mode" << endl
+         << endl;
+    cout << "[d] - Summon dirt block" << endl;
+    cout << "[g] - Summon grass block" << endl;
+    cout << "[c] - Summon crafter block" << endl;
     cout << endl
          << endl;
 
@@ -360,8 +362,7 @@ int main(int argc, char *argv[])
     sim_cube = new cMultiMesh();
 
     // add object to world
-    // world->addChild(sim_cube);
-    world->addChild(SimpleBlocks::newBlock());
+    // world->addChild(Blocks::dirtBlock());
 
     // load an object file
     bool fileload;
@@ -593,7 +594,15 @@ void keyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, 
 
     else if ((a_key == GLFW_KEY_D))
     {
-        world->addChild(SimpleBlocks::newBlock());
+        world->addChild(Blocks::dirtBlock());
+    }
+    else if ((a_key == GLFW_KEY_G))
+    {
+        world->addChild(Blocks::grassBlock());
+    }
+    else if ((a_key == GLFW_KEY_C))
+    {
+        world->addChild(Blocks::crafterBlock());
     }
 }
 
