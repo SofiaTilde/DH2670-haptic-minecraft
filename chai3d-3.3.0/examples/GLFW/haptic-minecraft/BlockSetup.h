@@ -10,6 +10,7 @@ public:
 
 private:
     static cTexture2dPtr newTexture(const char textureName[]);
+    static cTexture2dPtr newMersTexture(const char textureName[]);
     static cMultiMesh *newBlock(const char textureName[], const char loadPath[]);
 };
 
@@ -35,10 +36,10 @@ cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[]
 
     // load an object file
     bool fileload = simple_cube->loadFromFile(loadPath);
-    /*
-    todo
-    no error handling for failed file load
-    */
+    if (!fileload)
+    {
+        std::cout << "Error - 3D Model failed to load correctly" << std::endl;
+    }
 
     // resize object to screen
     simple_cube->scale(block_scale);
@@ -79,11 +80,19 @@ cTexture2dPtr BlockSetup::newTexture(const char textureName[])
     cTexture2dPtr texture = cTexture2d::create();
     char path[256];
     snprintf(path, sizeof(path), "./Textures/%s.png", textureName);
-    texture->loadFromFile(path);
-    /*
-    todo
-    no error handling for failed file load
-    */
+
+    bool fileload = texture->loadFromFile(path);
+    if (!fileload)
+    {
+        std::cout << "Error - Texture failed to load correctly" << std::endl;
+    }
+
+    // set filtering to nearest neighbor
+    texture->setMagFunction(GL_NEAREST);
+    texture->setMinFunction(GL_NEAREST);
+    return texture;
+}
+
     // set filtering to nearest neighbor
     texture->setMagFunction(GL_NEAREST);
     texture->setMinFunction(GL_NEAREST);
