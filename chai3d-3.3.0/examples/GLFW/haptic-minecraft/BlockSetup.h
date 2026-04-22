@@ -72,6 +72,8 @@ cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[]
 
     simple_cube->setTexture(BlockSetup::newTexture(textureName));
 
+    // todo shading using mers texture
+
     return simple_cube;
 }
 
@@ -92,6 +94,18 @@ cTexture2dPtr BlockSetup::newTexture(const char textureName[])
     texture->setMinFunction(GL_NEAREST);
     return texture;
 }
+
+cTexture2dPtr BlockSetup::newMersTexture(const char textureName[])
+{
+    cTexture2dPtr texture = cTexture2d::create();
+    char path[256];
+    snprintf(path, sizeof(path), "./Textures/%s_mers.tga", textureName);
+
+    bool fileload = texture->loadFromFile(path);
+    if (!fileload)
+    {
+        std::cout << "Error - Mers texture failed to load correctly" << std::endl;
+    }
 
     // set filtering to nearest neighbor
     texture->setMagFunction(GL_NEAREST);
