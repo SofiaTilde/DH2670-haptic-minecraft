@@ -761,8 +761,8 @@ void updateHaptics(void)
             selectedObject->setLocalTransform(parent_T_object);
 
             // set zero forces when manipulating objects
-            // tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
-            tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
+            tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
+            // tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
 
             tool->initialize();
         }
