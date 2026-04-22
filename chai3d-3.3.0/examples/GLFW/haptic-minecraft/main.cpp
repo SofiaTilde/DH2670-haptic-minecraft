@@ -38,11 +38,6 @@ cCamera *camera;
 // a light source to illuminate the objects in the world
 cDirectionalLight *light;
 
-// a virtual object
-// cMultiMesh* object;
-// cMultiMesh* catToy;
-cMultiMesh *sim_cube;
-
 // a haptic device handler
 cHapticDeviceHandler *handler;
 
@@ -357,98 +352,6 @@ int main(int argc, char *argv[])
 
     // stiffness properties
     maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
-
-    // create a virtual mesh
-    sim_cube = new cMultiMesh();
-
-    // add object to world
-    // world->addChild(Blocks::dirtBlock());
-
-    // load an object file
-    bool fileload;
-
-    fileload = sim_cube->loadFromFile("./Models/Block_simple.obj");
-    if (!fileload)
-    {
-#if defined(_MSVC)
-        fileload = sim_cube->loadFromFile("./Models/Block_simple.obj");
-#endif
-    }
-    if (!fileload)
-    {
-        cout << "Error - 3D Model failed to load correctly" << endl;
-        close();
-        return (-1);
-    }
-
-    // USE THIS CODE IF OBJECT IS TOO SMALL/BIG
-
-    double size;
-
-    size = cSub(sim_cube->getBoundaryMax(), sim_cube->getBoundaryMin()).length();
-
-    // resize object to screen
-    if (size > 0.001)
-    {
-        sim_cube->scale(0.2 / size);
-    }
-
-    cTexture2dPtr dirtM = cTexture2d::create();
-    fileload = dirtM->loadFromFile("./Textures/dirt.png");
-    // set filtering to nearest neighbor
-    dirtM->setMagFunction(GL_NEAREST);
-    dirtM->setMinFunction(GL_NEAREST);
-
-    sim_cube->m_material->setWhite();
-    sim_cube->setTexture(dirtM);
-    sim_cube->setUseTexture(true, true);
-    sim_cube->setUseMaterial(true, true);
-    // disable culling so that faces are rendered on both sides
-    sim_cube->setUseCulling(false);
-
-    // compute a boundary box
-    sim_cube->computeBoundaryBox(true);
-    // show/hide boundary box
-    sim_cube->setShowBoundaryBox(false);
-
-    /////////// ADJUST VALUES HERE ///////////
-
-    // compute collision detection algorithm
-    sim_cube->createAABBCollisionDetector(toolRadius);
-
-    // define a default stiffness for the object
-    sim_cube->setStiffness(0.2 * maxStiffness, true);
-
-    // define some haptic friction properties, First argument is Static Friction, Second is Dynamic Friction
-    sim_cube->setFriction(0.1, 0.2, true);
-
-    //////////////////////////////////////////
-
-    // enable display list for faster graphic rendering
-    sim_cube->setUseDisplayList(true);
-
-    // center object in scene
-    sim_cube->setLocalPos(-1.0 * sim_cube->getBoundaryCenter());
-
-    // rotate object in scene
-    // sim_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
-    // compute all edges of object for which adjacent triangles have more than 40 degree angle
-    sim_cube->computeAllEdges(0);
-
-    // set line width of edges and color
-    cColorf colorEdges;
-    colorEdges.setBlack();
-    sim_cube->setEdgeProperties(1, colorEdges);
-
-    // set normal properties for display
-    cColorf colorNormals;
-    colorNormals.setOrangeTomato();
-    sim_cube->setNormalsProperties(0.01, colorNormals);
-
-    // display options
-    sim_cube->setShowTriangles(showTriangles);
-    sim_cube->setShowEdges(showEdges);
-    sim_cube->setShowNormals(showNormals);
 
     //--------------------------------------------------------------------------
     // WIDGETS
