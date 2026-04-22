@@ -462,3 +462,4 @@ FodyWeavers.xsd
 *.blend31
 *.blend32
 /chai3d-3.3.0/examples/GLFW/haptic-minecraft/.vscode
+/chai3d-3.3.0/examples/GLFW/.vscode

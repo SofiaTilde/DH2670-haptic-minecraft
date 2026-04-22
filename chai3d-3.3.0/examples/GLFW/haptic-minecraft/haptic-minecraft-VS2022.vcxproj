@@ -21,6 +21,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assignment.h" />
+    <ClInclude Include="SimpleBlocks.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Haptic Minecraft</ProjectName>
     <ProjectGuid>{DF4A1F32-BA3E-4604-A9F5-721CAAA9EA71}</ProjectGuid>
@@ -144,6 +148,7 @@
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4244;4305;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -237,6 +242,7 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <ProgramDataBaseFileName />
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>

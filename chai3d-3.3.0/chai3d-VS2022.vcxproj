@@ -335,6 +335,7 @@
   <ItemDefinitionGroup Condition="'$(Chai3dUseExternalTheoraPlayer)' != 'true'">
     <ClCompile>
       <AdditionalIncludeDirectories>externals/theoraplayer/include/theoraplayer;externals/theoraplayer/src/Theora;externals/theoraplayer/src/YUV/C;externals/theoraplayer/externals/ogg/include;externals/theoraplayer/externals/vorbis/include;externals/theoraplayer/externals/vorbis/lib;externals/theoraplayer/externals/theora/include;externals/theoraplayer/externals/theora/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

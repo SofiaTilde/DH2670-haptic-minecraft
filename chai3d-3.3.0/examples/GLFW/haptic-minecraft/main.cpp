@@ -1,6 +1,10 @@
 #include "chai3d.h"
 #include <GLFW/glfw3.h>
 
+//#include "Assignment.h"
+#include "SimpleBlocks.h"
+//#include "GlobalVariables.h"
+
 using namespace chai3d;
 using namespace std;
 
@@ -39,7 +43,7 @@ cDirectionalLight *light;
 // a virtual object
 // cMultiMesh* object;
 // cMultiMesh* catToy;
-cMultiMesh *simple_cube;
+cMultiMesh *sim_cube;
 
 // a haptic device handler
 cHapticDeviceHandler *handler;
@@ -148,18 +152,9 @@ int main(int argc, char *argv[])
          << endl;
     cout << "Keyboard Options:" << endl
          << endl;
-    cout << "[1] - Texture   (ON/OFF)" << endl;
-    cout << "[2] - Wireframe (ON/OFF)" << endl;
-    cout << "[3] - Collision tree (ON/OFF)" << endl;
-    cout << "[4] - Increase collision tree display depth" << endl;
-    cout << "[5] - Decrease collision tree display depth" << endl;
-    cout << "[s] - Save screenshot to file" << endl;
-    cout << "[e] - Enable/Disable display of edges" << endl;
-    cout << "[t] - Enable/Disable display of triangles" << endl;
-    cout << "[n] - Enable/Disable display of normals" << endl;
-    cout << "[f] - Enable/Disable full screen mode" << endl;
-    cout << "[m] - Enable/Disable vertical mirroring" << endl;
     cout << "[q] - Exit application" << endl;
+    cout << "[w] - Enable/Disable vertical mirroring" << endl;
+    cout << "[e] - Enable/Disable full screen mode" << endl;
     cout << endl
          << endl;
 
@@ -326,12 +321,6 @@ int main(int argc, char *argv[])
     // if the haptic device has a gripper, enable it as a user switch
     hapticDevice->setEnableGripperUserSwitch(true);
 
-    /////////// ADJUST VALUES HERE ///////////
-
-    // define the radius of the tool (sphere)
-    double toolRadius = 0.01;
-
-    //////////////////////////////////////////
     //
     // define a radius for the tool
     tool->setRadius(toolRadius);
@@ -365,22 +354,23 @@ int main(int argc, char *argv[])
     double workspaceScaleFactor = tool->getWorkspaceScaleFactor();
 
     // stiffness properties
-    double maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
+    maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
 
     // create a virtual mesh
-    simple_cube = new cMultiMesh();
+    sim_cube = new cMultiMesh();
 
     // add object to world
-    world->addChild(simple_cube);
+    // world->addChild(sim_cube);
+    world->addChild(SimpleBlocks::newBlock());
 
     // load an object file
     bool fileload;
 
-    fileload = simple_cube->loadFromFile("./Models/Block_simple.obj");
+    fileload = sim_cube->loadFromFile("./Models/Block_simple.obj");
     if (!fileload)
     {
 #if defined(_MSVC)
-        fileload = simple_cube->loadFromFile("./Models/Block_simple.obj");
+        fileload = sim_cube->loadFromFile("./Models/Block_simple.obj");
 #endif
     }
     if (!fileload)
@@ -394,12 +384,12 @@ int main(int argc, char *argv[])
 
     double size;
 
-    size = cSub(simple_cube->getBoundaryMax(), simple_cube->getBoundaryMin()).length();
+    size = cSub(sim_cube->getBoundaryMax(), sim_cube->getBoundaryMin()).length();
 
     // resize object to screen
     if (size > 0.001)
     {
-        simple_cube->scale(0.2 / size);
+        sim_cube->scale(0.2 / size);
     }
 
     cTexture2dPtr dirtM = cTexture2d::create();
@@ -408,56 +398,56 @@ int main(int argc, char *argv[])
     dirtM->setMagFunction(GL_NEAREST);
     dirtM->setMinFunction(GL_NEAREST);
 
-    simple_cube->m_material->setWhite();
-    simple_cube->setTexture(dirtM);
-    simple_cube->setUseTexture(true, true);
-    simple_cube->setUseMaterial(true, true);
+    sim_cube->m_material->setWhite();
+    sim_cube->setTexture(dirtM);
+    sim_cube->setUseTexture(true, true);
+    sim_cube->setUseMaterial(true, true);
     // disable culling so that faces are rendered on both sides
-    simple_cube->setUseCulling(false);
+    sim_cube->setUseCulling(false);
 
     // compute a boundary box
-    simple_cube->computeBoundaryBox(true);
+    sim_cube->computeBoundaryBox(true);
     // show/hide boundary box
-    simple_cube->setShowBoundaryBox(false);
+    sim_cube->setShowBoundaryBox(false);
 
     /////////// ADJUST VALUES HERE ///////////
 
     // compute collision detection algorithm
-    simple_cube->createAABBCollisionDetector(toolRadius);
+    sim_cube->createAABBCollisionDetector(toolRadius);
 
     // define a default stiffness for the object
-    simple_cube->setStiffness(0.2 * maxStiffness, true);
+    sim_cube->setStiffness(0.2 * maxStiffness, true);
 
     // define some haptic friction properties, First argument is Static Friction, Second is Dynamic Friction
-    simple_cube->setFriction(0.1, 0.2, true);
+    sim_cube->setFriction(0.1, 0.2, true);
 
     //////////////////////////////////////////
 
     // enable display list for faster graphic rendering
-    simple_cube->setUseDisplayList(true);
+    sim_cube->setUseDisplayList(true);
 
     // center object in scene
-    simple_cube->setLocalPos(-1.0 * simple_cube->getBoundaryCenter());
+    sim_cube->setLocalPos(-1.0 * sim_cube->getBoundaryCenter());
 
     // rotate object in scene
-    // simple_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
+    // sim_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
     // compute all edges of object for which adjacent triangles have more than 40 degree angle
-    simple_cube->computeAllEdges(0);
+    sim_cube->computeAllEdges(0);
 
     // set line width of edges and color
     cColorf colorEdges;
     colorEdges.setBlack();
-    simple_cube->setEdgeProperties(1, colorEdges);
+    sim_cube->setEdgeProperties(1, colorEdges);
 
     // set normal properties for display
     cColorf colorNormals;
     colorNormals.setOrangeTomato();
-    simple_cube->setNormalsProperties(0.01, colorNormals);
+    sim_cube->setNormalsProperties(0.01, colorNormals);
 
     // display options
-    simple_cube->setShowTriangles(showTriangles);
-    simple_cube->setShowEdges(showEdges);
-    simple_cube->setShowNormals(showNormals);
+    sim_cube->setShowTriangles(showTriangles);
+    sim_cube->setShowEdges(showEdges);
+    sim_cube->setShowNormals(showNormals);
 
     //--------------------------------------------------------------------------
     // WIDGETS
@@ -565,80 +555,15 @@ void keyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, 
         glfwSetWindowShouldClose(a_window, GLFW_TRUE);
     }
 
-    // option - show/hide texture
-    /*else if (a_key == GLFW_KEY_1)
+    // option - toggle vertical mirroring
+    else if (a_key == GLFW_KEY_W)
     {
-        bool useTexture = object->getUseTexture();
-        object->setUseTexture(!useTexture);
-    }*/
-
-    // option - enable/disable wire mode
-    /*  else if (a_key == GLFW_KEY_2)
-      {
-          bool useWireMode = object->getWireMode();
-          object->setWireMode(!useWireMode, true);
-      }*/
-
-    // option - show/hide collision detection tree
-    /* else if (a_key == GLFW_KEY_3)
-     {
-         cColorf color = cColorf(1.0, 0.0, 0.0);
-         object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-         bool show = object->getShowCollisionDetector();
-         object->setShowCollisionDetector(!show, true);
-     }*/
-
-    // option - decrease depth level of collision tree
-    /* else if (a_key == GLFW_KEY_4)
-     {
-         collisionTreeDisplayLevel--;
-         if (collisionTreeDisplayLevel < 0) { collisionTreeDisplayLevel = 0; }
-         cColorf color = cColorf(1.0, 0.0, 0.0);
-         object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-         object->setShowCollisionDetector(true, true);
-     }*/
-
-    // option - increase depth level of collision tree
-    /*  else if (a_key == GLFW_KEY_5)
-      {
-          collisionTreeDisplayLevel++;
-          cColorf color = cColorf(1.0, 0.0, 0.0);
-          object->setCollisionDetectorProperties(collisionTreeDisplayLevel, color, true);
-          object->setShowCollisionDetector(true, true);
-      }*/
-
-    // option - save screenshot to file
-    else if (a_key == GLFW_KEY_S)
-    {
-        cImagePtr image = cImage::create();
-        camera->copyImageBuffer(image);
-        image->saveToFile("screenshot.png");
-        cout << "> Saved screenshot to file.       \r";
+        mirroredDisplay = !mirroredDisplay;
+        camera->setMirrorVertical(mirroredDisplay);
     }
 
-    // option - show/hide triangles
-    /*  else if (a_key == GLFW_KEY_T)
-      {
-          showTriangles = !showTriangles;
-          object->setShowTriangles(showTriangles);
-      }*/
-
-    // option - show/hide edges
-    /* else if (a_key == GLFW_KEY_E)
-     {
-         showEdges = !showEdges;
-         object->setShowEdges(showEdges);
-     }*/
-
-    // option - show/hide normals
-    /*  else if (a_key == GLFW_KEY_N)
-      {
-          showNormals = !showNormals;
-          object->setShowNormals(showNormals);
-      }*/
-
     // option - toggle fullscreen
-    else if (a_key == GLFW_KEY_F)
+    else if (a_key == GLFW_KEY_E)
     {
         // toggle state variable
         fullscreen = !fullscreen;
@@ -666,11 +591,9 @@ void keyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, 
         }
     }
 
-    // option - toggle vertical mirroring
-    else if (a_key == GLFW_KEY_M)
+    else if ((a_key == GLFW_KEY_D))
     {
-        mirroredDisplay = !mirroredDisplay;
-        camera->setMirrorVertical(mirroredDisplay);
+        world->addChild(SimpleBlocks::newBlock());
     }
 }
 
