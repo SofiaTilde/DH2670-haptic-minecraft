@@ -197,13 +197,36 @@ int main(int argc, char *argv[])
          << endl;
     cout << "Keyboard Options:" << endl
          << endl;
-    cout << "[g] - Enable/Disable gravity" << endl;
-    cout << "[f] - Enable/Disable full screen mode" << endl;
-    cout << "[m] - Enable/Disable vertical mirroring" << endl
+    cout << "[w] - Enable/Disable full screen mode" << endl;
+    cout << "[e] - Enable/Disable vertical mirroring" << endl;
+    cout << "[r] - Enable/Disable gravity" << endl
          << endl;
-    cout << "[d] - Summon dirt block" << endl;
-    cout << "[r] - Summon grass block" << endl;
-    cout << "[c] - Summon crafter block" << endl;
+    cout << "[t] - Summon ice block" << endl;
+    cout << "[y] - Summon packed ice block" << endl;
+    cout << "[u] - Summon blue ice block" << endl;
+    cout << "[i] - Summon mud block" << endl;
+    cout << "[o] - Summon honey block" << endl;
+    cout << "[p] - Summon hay bale block" << endl;
+    cout << "[å] - Summon slime block" << endl;
+    cout << "[a] - Summon clay block" << endl;
+    cout << "[s] - Summon sand block" << endl;
+    cout << "[d] - Summon gravel block" << endl;
+    cout << "[f] - Summon packed mud block" << endl;
+    cout << "[g] - Summon cobblestone block" << endl;
+    cout << "[h] - Summon bricks block" << endl;
+    cout << "[j] - Summon stone block" << endl;
+    cout << "[k] - Summon dirt block" << endl;
+    cout << "[l] - Summon powder snow block" << endl;
+    cout << "[ö] - Summon tnt block" << endl;
+    cout << "[ä] - Summon oak planks block" << endl;
+    cout << "[z] - Summon birch planks block" << endl;
+    cout << "[x] - Summon mangrove planks block" << endl;
+    cout << "[c] - Summon warped planks block" << endl;
+    cout << "[v] - Summon white wool block" << endl;
+    cout << "[b] - Summon orange wool block" << endl;
+    cout << "[n] - Summon magenta wool block" << endl;
+    cout << "[m] - Summon grass block" << endl
+         << endl;
     cout << "[q] - Exit application" << endl;
     cout << endl
          << endl;
@@ -579,7 +602,7 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     }
 
     // option - enable/disable gravity
-    else if (a_key == GLFW_KEY_G)
+    else if (a_key == GLFW_KEY_R)
     {
         if (bulletWorld->getGravity().length() > 0.0)
         {
@@ -592,7 +615,7 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     }
 
     // option - toggle fullscreen
-    else if (a_key == GLFW_KEY_F)
+    else if (a_key == GLFW_KEY_W)
     {
         // toggle state variable
         fullscreen = !fullscreen;
@@ -623,27 +646,111 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     }
 
     // option - toggle vertical mirroring
-    else if (a_key == GLFW_KEY_M)
+    else if (a_key == GLFW_KEY_E)
     {
         mirroredDisplay = !mirroredDisplay;
         camera->setMirrorVertical(mirroredDisplay);
     }
 
-    else if ((a_key == GLFW_KEY_D))
+    else if ((a_key == GLFW_KEY_T))
     {
-        bulletWorld->addChild(Blocks::dirtBlock());
+        bulletWorld->addChild(Blocks::iceBlock());
     }
-    else if ((a_key == GLFW_KEY_R))
+    else if ((a_key == GLFW_KEY_Y))
     {
-        bulletWorld->addChild(Blocks::grassBlock());
+        bulletWorld->addChild(Blocks::packedIceBlock());
     }
-    else if ((a_key == GLFW_KEY_C))
+    else if ((a_key == GLFW_KEY_U))
     {
-        bulletWorld->addChild(Blocks::crafterBlock());
+        bulletWorld->addChild(Blocks::blueIceBlock());
+    }
+    else if ((a_key == GLFW_KEY_I))
+    {
+        bulletWorld->addChild(Blocks::mudBlock());
+    }
+    else if ((a_key == GLFW_KEY_O))
+    {
+        bulletWorld->addChild(Blocks::honeyBlock());
+    }
+    else if ((a_key == GLFW_KEY_P))
+    {
+        bulletWorld->addChild(Blocks::hayBaleBlock());
+    }
+    else if ((a_key == GLFW_KEY_LEFT_BRACKET)) // Å
+    {
+        bulletWorld->addChild(Blocks::slimeBlock());
+    }
+    else if ((a_key == GLFW_KEY_A))
+    {
+        bulletWorld->addChild(Blocks::clayBlock());
     }
     else if ((a_key == GLFW_KEY_S))
     {
-        bulletWorld->addChild(Blocks::spongeBlock());
+        bulletWorld->addChild(Blocks::sandBlock());
+    }
+    else if ((a_key == GLFW_KEY_D))
+    {
+        bulletWorld->addChild(Blocks::gravelBlock());
+    }
+    else if ((a_key == GLFW_KEY_F))
+    {
+        bulletWorld->addChild(Blocks::packedMudBlock());
+    }
+    else if ((a_key == GLFW_KEY_G))
+    {
+        bulletWorld->addChild(Blocks::cobblestoneBlock());
+    }
+    else if ((a_key == GLFW_KEY_H))
+    {
+        bulletWorld->addChild(Blocks::bricksBlock());
+    }
+    else if ((a_key == GLFW_KEY_J))
+    {
+        bulletWorld->addChild(Blocks::stoneBlock());
+    }
+    else if ((a_key == GLFW_KEY_K))
+    {
+        bulletWorld->addChild(Blocks::dirtBlock());
+    }
+    else if ((a_key == GLFW_KEY_L))
+    {
+        bulletWorld->addChild(Blocks::powderSnowBlock());
+    }
+    else if ((a_key == GLFW_KEY_SEMICOLON)) // Ö
+    {
+        bulletWorld->addChild(Blocks::tntBlock());
+    }
+    else if ((a_key == GLFW_KEY_APOSTROPHE)) // Ä
+    {
+        bulletWorld->addChild(Blocks::oakPlanksBlock());
+    }
+    else if ((a_key == GLFW_KEY_Z))
+    {
+        bulletWorld->addChild(Blocks::birchPlanksBlock());
+    }
+    else if ((a_key == GLFW_KEY_X))
+    {
+        bulletWorld->addChild(Blocks::mangrovePlanksBlock());
+    }
+    else if ((a_key == GLFW_KEY_C))
+    {
+        bulletWorld->addChild(Blocks::warpedPlanksBlock());
+    }
+    else if ((a_key == GLFW_KEY_V))
+    {
+        bulletWorld->addChild(Blocks::whiteWoolBlock());
+    }
+    else if ((a_key == GLFW_KEY_B))
+    {
+        bulletWorld->addChild(Blocks::orangeWoolBlock());
+    }
+    else if ((a_key == GLFW_KEY_N))
+    {
+        bulletWorld->addChild(Blocks::magentaWoolBlock());
+    }
+    else if ((a_key == GLFW_KEY_M))
+    {
+        bulletWorld->addChild(Blocks::grassBlock());
     }
 }
 
