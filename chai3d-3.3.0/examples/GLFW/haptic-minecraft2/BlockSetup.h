@@ -1,0 +1,154 @@
+#include "GlobalVariables.h"
+#include "chai3d.h"
+
+class BlockSetup
+{
+public:
+    static cMultiMesh *newSimpleBlock(const char textureName[]);
+    static cMultiMesh *newTopBlock(const char textureName[]);
+    static cMultiMesh *newFullBlock(const char textureName[]);
+
+    static cBulletBox *test()
+    {
+        cBulletBox *body = new cBulletBox(bulletWorld, box_scale, box_scale, box_scale);
+
+        // define some material properties for each cube
+        cMaterial mat10;
+        mat10.setPurpleAmethyst();
+        mat10.m_emission.setGrayLevel(0.3);
+        // mat10.setStiffness(0.3 * maxStiffness);
+        // mat10.setDynamicFriction(0.6);
+        // mat10.setStaticFriction(0.6);
+        body->setMaterial(mat10);
+        body->setStiffness(0.3 * maxStiffness);
+        body->setFriction(0.6, 0.6);
+
+        body->setMass(0.05);
+
+        // estimate their inertia properties
+        body->estimateInertia();
+
+        // create dynamic models
+        body->buildDynamicModel();
+
+        // create collision detector for haptic interaction
+        body->createAABBCollisionDetector(toolRadius);
+
+        // set friction values
+        body->setSurfaceFriction(0.4);
+
+        // set position of each cube
+        body->setLocalPos(0.0, 0.0, 0.5);
+
+        // cMultiMesh *aa = newBlock("dirt", "./Models/Block_simple.obj");
+        // body->addChild(aa);
+
+        bulletWorld->computeBoundaryBox(true);
+
+        return body;
+    }
+
+private:
+    static cTexture2dPtr newTexture(const char textureName[]);
+    static cTexture2dPtr newMersTexture(const char textureName[]);
+    static cMultiMesh *newBlock(const char textureName[], const char loadPath[]);
+};
+
+cMultiMesh *BlockSetup::newSimpleBlock(const char textureName[])
+{
+    return newBlock(textureName, "./Models/Block_simple.obj");
+}
+
+cMultiMesh *BlockSetup::newTopBlock(const char textureName[])
+{
+    return newBlock(textureName, "./Models/Block_top_and_bottom.obj");
+}
+
+cMultiMesh *BlockSetup::newFullBlock(const char textureName[])
+{
+    return newBlock(textureName, "./Models/Block_full_sides.obj");
+}
+
+cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[])
+{
+    cMultiMesh *simple_cube;
+    simple_cube = new cMultiMesh();
+
+    // load an object file
+    bool fileload = simple_cube->loadFromFile(loadPath);
+    if (!fileload)
+    {
+        std::cout << "Error - 3D Model failed to load correctly" << std::endl;
+    }
+
+    // resize object to screen
+    simple_cube->scale(block_scale);
+
+    simple_cube->m_material->setWhite();
+    simple_cube->setUseTexture(true, true);
+    simple_cube->setUseMaterial(true, true);
+    // disable culling so that faces are rendered on both sides
+    // simple_cube->setUseCulling(false);
+
+    // compute a boundary box
+    simple_cube->computeBoundaryBox(true);
+    // show/hide boundary box
+    simple_cube->setShowBoundaryBox(false);
+
+    // compute collision detection algorithm
+    simple_cube->createAABBCollisionDetector(toolRadius);
+
+    // enable display list for faster graphic rendering
+    simple_cube->setUseDisplayList(true);
+
+    // center object in scene
+    simple_cube->setLocalPos(-1.0 * simple_cube->getBoundaryCenter());
+
+    // rotate object in scene
+    // simple_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
+
+    // compute all edges of object for which adjacent triangles have more than 40 degree angle
+    simple_cube->computeAllEdges(0);
+
+    simple_cube->setTexture(BlockSetup::newTexture(textureName));
+
+    // todo shading using mers texture
+
+    return simple_cube;
+}
+
+cTexture2dPtr BlockSetup::newTexture(const char textureName[])
+{
+    cTexture2dPtr texture = cTexture2d::create();
+    char path[256];
+    snprintf(path, sizeof(path), "./Textures/%s.png", textureName);
+
+    bool fileload = texture->loadFromFile(path);
+    if (!fileload)
+    {
+        std::cout << "Error - Texture failed to load correctly" << std::endl;
+    }
+
+    // set filtering to nearest neighbor
+    texture->setMagFunction(GL_NEAREST);
+    texture->setMinFunction(GL_NEAREST);
+    return texture;
+}
+
+cTexture2dPtr BlockSetup::newMersTexture(const char textureName[])
+{
+    cTexture2dPtr texture = cTexture2d::create();
+    char path[256];
+    snprintf(path, sizeof(path), "./Textures/%s_mers.tga", textureName);
+
+    bool fileload = texture->loadFromFile(path);
+    if (!fileload)
+    {
+        std::cout << "Error - Mers texture failed to load correctly" << std::endl;
+    }
+
+    // set filtering to nearest neighbor
+    texture->setMagFunction(GL_NEAREST);
+    texture->setMinFunction(GL_NEAREST);
+    return texture;
+}
