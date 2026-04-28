@@ -27,7 +27,7 @@
     <ClInclude Include="GlobalVariables.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>Haptic Minecraft 2</ProjectName>
+    <ProjectName>Haptic Minecraft</ProjectName>
     <ProjectGuid>{4FE8553C-05C1-422C-BC1C-93AFC6551444}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

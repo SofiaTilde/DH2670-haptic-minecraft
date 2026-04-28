@@ -10,11 +10,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab1", "examples\GLFW\!-lab
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab2", "examples\GLFW\!-lab-2\!-lab-2-VS2022.vcxproj", "{94CD20A4-DDE0-41C4-93B0-6EB86D598F96}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chai3d-Bullet", "chai3d-Bullet-VS2022.vcxproj", "{89755822-86E3-4209-8C0E-C03B9BF95018}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-Bullet-cube", "examples\GLFW\01-Bullet-cube\01-Bullet-cube-VS2022.vcxproj", "{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Haptic Minecraft 2", "examples\GLFW\haptic-minecraft\haptic-minecraft-VS2022.vcxproj", "{4FE8553C-05C1-422C-BC1C-93AFC6551444}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Haptic Minecraft", "examples\GLFW\haptic-minecraft\haptic-minecraft-VS2022.vcxproj", "{4FE8553C-05C1-422C-BC1C-93AFC6551444}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,14 +54,6 @@ Global
 		{94CD20A4-DDE0-41C4-93B0-6EB86D598F96}.Release|Win32.Build.0 = Release|Win32
 		{94CD20A4-DDE0-41C4-93B0-6EB86D598F96}.Release|x64.ActiveCfg = Release|x64
 		{94CD20A4-DDE0-41C4-93B0-6EB86D598F96}.Release|x64.Build.0 = Release|x64
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Debug|Win32.ActiveCfg = Debug|Win32
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Debug|Win32.Build.0 = Debug|Win32
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Debug|x64.ActiveCfg = Debug|x64
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Debug|x64.Build.0 = Debug|x64
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Release|Win32.ActiveCfg = Release|Win32
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Release|Win32.Build.0 = Release|Win32
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Release|x64.ActiveCfg = Release|x64
-		{89755822-86E3-4209-8C0E-C03B9BF95018}.Release|x64.Build.0 = Release|x64
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Debug|Win32.ActiveCfg = Debug|Win32
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Debug|Win32.Build.0 = Debug|Win32
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Debug|x64.ActiveCfg = Debug|x64
