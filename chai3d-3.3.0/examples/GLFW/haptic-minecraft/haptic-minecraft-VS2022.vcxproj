@@ -157,7 +157,7 @@
     <Link>
       <AdditionalDependencies>glfw.lib;OpenGL32.lib;glu32.lib;chai3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../../../lib/$(Configuration)/$(Platform);../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories);../lib/$(Configuration)/$(Platform);../../../lib/$(Configuration)/$(Platform);../../../../../lib/$(Configuration)/$(Platform);../../../extras/glfw/lib/$(Configuration)/$(Platform);../../../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../lib/$(Configuration)/$(Platform);../../../extras/glfw;../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories);../lib/$(Configuration)/$(Platform);../../../../../lib/$(Configuration)/$(Platform);../../../../../extras/glfw/lib/$(Configuration)/$(Platform)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -250,7 +250,7 @@
     </ProjectReference>
     <Link>
       <AdditionalDependencies>glfw.lib;OpenGL32.lib;glu32.lib;chai3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../lib/$(Configuration)/$(Platform);../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories);../lib/$(Configuration)/$(Platform);../../../lib/$(Configuration)/$(Platform);../../../../../lib/$(Configuration)/$(Platform);../../../extras/glfw/lib/$(Configuration)/$(Platform);../../../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../lib/$(Configuration)/$(Platform);../../../extras/glfw;../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories);../lib/$(Configuration)/$(Platform);../../../../../lib/$(Configuration)/$(Platform);../../../../../extras/glfw/lib/$(Configuration)/$(Platform)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>

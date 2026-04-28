@@ -12,13 +12,12 @@ private:
         // cMultiMesh *block = BlockSetup::newFullBlock(imageName);
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
-        double stiffness = 0.0; // default:0.0  range:0-1
-
+        double stiffness = 0.3; // default:0.0  range:0-1
         /** force needed to start sliding (0=smooth, ~0–1 normal, >1 sticky/strong grip)*/
-        // block->m_material->setStaticFriction(0.0); // default:0.0  range:0-3
-
+        double staticFriction = 0.0; // default:0.0  range:0-1
         /** resistance while sliding (0=slippery, ~0–1 normal, >1 heavy drag)*/
-        // block->m_material->setDynamicFriction(0.0); // default:0.0  range:0-3
+        double dynamicFriction = 0.0; // default:0.0  range:0-1
+
         /** reduces oscillation/instability (0=none, ~0–10 stable feel, higher=very sluggish) */
         // block->m_material->setDamping(0.0); // default:0.0  range:0-100
         /** distance at which magnetic attraction starts (0=off, ~0.01–0.2m typical) */
@@ -39,7 +38,8 @@ private:
         /** speed of vibration (0–50 low rumble, 50–300 texture, 300–1000+ buzz) */
         // block->m_material->setVibrationFrequency(0.0); // default:0.0  range:0-2000 Hz
 
-        block->m_material->setStiffness(stiffness * maxStiffness);
+        block->setStiffness(stiffness * maxStiffness);
+        block->setFriction(staticFriction, dynamicFriction);
 
         return block;
     }
@@ -53,13 +53,12 @@ public:
         // cMultiMesh *block = BlockSetup::newFullBlock(imageName);
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
-        double stiffness = 0.0; // default:0.0  range:0-1
-
+        double stiffness = 0.3; // default:0.0  range:0-1
         /** force needed to start sliding (0=smooth, ~0–1 normal, >1 sticky/strong grip)*/
-        // block->m_material->setStaticFriction(0.0); // default:0.0  range:0-3
-
+        double staticFriction = 0.0; // default:0.0  range:0-1
         /** resistance while sliding (0=slippery, ~0–1 normal, >1 heavy drag)*/
-        // block->m_material->setDynamicFriction(0.0); // default:0.0  range:0-3
+        double dynamicFriction = 0.0; // default:0.0  range:0-1
+
         /** reduces oscillation/instability (0=none, ~0–10 stable feel, higher=very sluggish) */
         // block->m_material->setDamping(0.0); // default:0.0  range:0-100
         /** distance at which magnetic attraction starts (0=off, ~0.01–0.2m typical) */
@@ -80,7 +79,8 @@ public:
         /** speed of vibration (0–50 low rumble, 50–300 texture, 300–1000+ buzz) */
         // block->m_material->setVibrationFrequency(0.0); // default:0.0  range:0-2000 Hz
 
-        block->m_material->setStiffness(stiffness * maxStiffness);
+        block->setStiffness(stiffness * maxStiffness);
+        block->setFriction(staticFriction, dynamicFriction);
 
         return block;
     }
@@ -92,13 +92,12 @@ public:
         // cMultiMesh *block = BlockSetup::newFullBlock(imageName);
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
-        double stiffness = 0.0; // default:0.0  range:0-1
-
+        double stiffness = 0.3; // default:0.0  range:0-1
         /** force needed to start sliding (0=smooth, ~0–1 normal, >1 sticky/strong grip)*/
-        // block->m_material->setStaticFriction(0.0); // default:0.0  range:0-3
-
+        double staticFriction = 0.0; // default:0.0  range:0-1
         /** resistance while sliding (0=slippery, ~0–1 normal, >1 heavy drag)*/
-        // block->m_material->setDynamicFriction(0.0); // default:0.0  range:0-3
+        double dynamicFriction = 0.0; // default:0.0  range:0-1
+
         /** reduces oscillation/instability (0=none, ~0–10 stable feel, higher=very sluggish) */
         // block->m_material->setDamping(0.0); // default:0.0  range:0-100
         /** distance at which magnetic attraction starts (0=off, ~0.01–0.2m typical) */
@@ -119,7 +118,8 @@ public:
         /** speed of vibration (0–50 low rumble, 50–300 texture, 300–1000+ buzz) */
         // block->m_material->setVibrationFrequency(0.0); // default:0.0  range:0-2000 Hz
 
-        block->m_material->setStiffness(stiffness * maxStiffness);
+        block->setStiffness(stiffness * maxStiffness);
+        block->setFriction(staticFriction, dynamicFriction);
 
         return block;
     }
@@ -131,13 +131,12 @@ public:
         cMultiMesh *block = BlockSetup::newFullBlock(imageName);
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
-        double stiffness = 0.0; // default:0.0  range:0-1
-
+        double stiffness = 0.3; // default:0.0  range:0-1
         /** force needed to start sliding (0=smooth, ~0–1 normal, >1 sticky/strong grip)*/
-        // block->m_material->setStaticFriction(0.0); // default:0.0  range:0-3
-
+        double staticFriction = 0.0; // default:0.0  range:0-1
         /** resistance while sliding (0=slippery, ~0–1 normal, >1 heavy drag)*/
-        // block->m_material->setDynamicFriction(0.0); // default:0.0  range:0-3
+        double dynamicFriction = 0.0; // default:0.0  range:0-1
+
         /** reduces oscillation/instability (0=none, ~0–10 stable feel, higher=very sluggish) */
         // block->m_material->setDamping(0.0); // default:0.0  range:0-100
         /** distance at which magnetic attraction starts (0=off, ~0.01–0.2m typical) */
@@ -158,7 +157,8 @@ public:
         /** speed of vibration (0–50 low rumble, 50–300 texture, 300–1000+ buzz) */
         // block->m_material->setVibrationFrequency(0.0); // default:0.0  range:0-2000 Hz
 
-        block->m_material->setStiffness(stiffness * maxStiffness);
+        block->setStiffness(stiffness * maxStiffness);
+        block->setFriction(staticFriction, dynamicFriction);
 
         return block;
     }

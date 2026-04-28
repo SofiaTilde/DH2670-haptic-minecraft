@@ -345,7 +345,7 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
     // CREATE OBJECT
     //--------------------------------------------------------------------------
-
+    world->addChild(Blocks::dirtBlock());
     // read the scale factor between the physical workspace of the haptic
     // device and the virtual workspace defined for the tool
     double workspaceScaleFactor = tool->getWorkspaceScaleFactor();
