@@ -101,11 +101,6 @@ cLabel *labelRates;
 // BULLET MODULE VARIABLES
 //---------------------------------------------------------------------------
 
-// bullet objects
-cBulletBox *bulletBox0;
-cBulletBox *bulletBox1;
-cBulletBox *bulletBox2;
-
 // bullet static walls and ground
 cBulletStaticPlane *bulletInvisibleWall1;
 cBulletStaticPlane *bulletInvisibleWall2;
@@ -446,74 +441,6 @@ int main(int argc, char *argv[])
     bulletWorld->setGravity(0.0, 0.0, -9.8);
 
     //////////////////////////////////////////////////////////////////////////
-    // 3 BULLET BLOCKS
-    //////////////////////////////////////////////////////////////////////////
-    double size = 0.4;
-
-    // create three objects that are added to the world
-    bulletBox0 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox0);
-
-    bulletBox1 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox1);
-
-    bulletBox2 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox2);
-
-    // define some material properties for each cube
-    cMaterial mat0, mat1, mat2;
-    mat0.setRedIndian();
-    mat0.setStiffness(0.3 * maxStiffness);
-    mat0.setDynamicFriction(0.6);
-    mat0.setStaticFriction(0.6);
-    bulletBox0->setMaterial(mat0);
-
-    mat1.setBlueRoyal();
-    mat1.setStiffness(0.3 * maxStiffness);
-    mat1.setDynamicFriction(0.6);
-    mat1.setStaticFriction(0.6);
-    bulletBox1->setMaterial(mat1);
-
-    mat2.setGreenDarkSea();
-    mat2.setStiffness(0.3 * maxStiffness);
-    mat2.setDynamicFriction(0.6);
-    mat2.setStaticFriction(0.6);
-    bulletBox2->setMaterial(mat2);
-
-    // define some mass properties for each cube
-    bulletBox0->setMass(0.05);
-    bulletBox1->setMass(0.05);
-    bulletBox2->setMass(0.05);
-
-    // estimate their inertia properties
-    bulletBox0->estimateInertia();
-    bulletBox1->estimateInertia();
-    bulletBox2->estimateInertia();
-
-    // create dynamic models
-    bulletBox0->buildDynamicModel();
-    bulletBox1->buildDynamicModel();
-    bulletBox2->buildDynamicModel();
-
-    // create collision detector for haptic interaction
-    bulletBox0->createAABBCollisionDetector(toolRadius);
-    bulletBox1->createAABBCollisionDetector(toolRadius);
-    bulletBox2->createAABBCollisionDetector(toolRadius);
-
-    // set friction values
-    bulletBox0->setSurfaceFriction(0.4);
-    bulletBox1->setSurfaceFriction(0.4);
-    bulletBox2->setSurfaceFriction(0.4);
-
-    // set position of each cube
-    bulletBox0->setLocalPos(0.0, -0.6, 0.5);
-    bulletBox1->setLocalPos(0.0, 0.6, 0.5);
-    bulletBox2->setLocalPos(0.0, 0.0, 0.5);
-
-    // rotate central cube 45 degrees around z-axis
-    bulletBox0->rotateAboutGlobalAxisDeg(0, 0, 1, 45);
-
-    //////////////////////////////////////////////////////////////////////////
     // INVISIBLE WALLS
     //////////////////////////////////////////////////////////////////////////
 
@@ -704,7 +631,6 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
 
     else if ((a_key == GLFW_KEY_D))
     {
-        cout << "added dirt block" << endl;
         bulletWorld->addChild(Blocks::dirtBlock());
     }
     else if ((a_key == GLFW_KEY_R))
@@ -714,15 +640,6 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     else if ((a_key == GLFW_KEY_C))
     {
         bulletWorld->addChild(Blocks::crafterBlock());
-    }
-    else if ((a_key == GLFW_KEY_J))
-    {
-        cBulletBox *block = BlockSetup::test();
-
-        bulletWorld->addChild(block);
-        tool->initialize();
-
-        tool->start();
     }
 }
 
@@ -871,17 +788,11 @@ void renderHaptics(void)
 
                 // walk up the hierarchy until we find a Bullet object
                 cBulletGenericObject *bulletobject = nullptr;
-                int count = 0;
                 while (object != nullptr)
                 {
-                    count += 1;
                     bulletobject = dynamic_cast<cBulletGenericObject *>(object);
-                    // cout << count << endl;
                     if (bulletobject)
-                    {
-                        // cout << "Found" << endl;
                         break;
-                    }
 
                     object = object->getParent();
                 }
@@ -894,7 +805,6 @@ void renderHaptics(void)
                 {
                     bulletobject->addExternalForceAtPoint(-interactionPoint->getLastComputedForce(),
                                                           collisionEvent->m_globalPos - object->getLocalPos());
-                    cout << (-interactionPoint->getLastComputedForce()) << endl;
                 }
             }
         }

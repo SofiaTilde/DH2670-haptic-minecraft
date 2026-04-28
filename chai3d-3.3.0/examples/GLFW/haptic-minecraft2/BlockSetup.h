@@ -4,72 +4,112 @@
 class BlockSetup
 {
 public:
-    static cMultiMesh *newSimpleBlock(const char textureName[]);
-    static cMultiMesh *newTopBlock(const char textureName[]);
-    static cMultiMesh *newFullBlock(const char textureName[]);
+    static cBulletBox *newSimpleBlock(const char textureName[]);
+    static cBulletBox *newTopBlock(const char textureName[]);
+    static cBulletBox *newFullBlock(const char textureName[]);
+    static void requiredBlock(cBulletBox *block);
 
     static cBulletBox *test()
     {
-        cBulletBox *body = new cBulletBox(bulletWorld, box_scale, box_scale, box_scale);
+        cBulletBox *block = new cBulletBox(bulletWorld, box_scale, box_scale, box_scale);
 
-        // define some material properties for each cube
-        cMaterial mat10;
-        mat10.setPurpleAmethyst();
-        mat10.m_emission.setGrayLevel(0.3);
-        // mat10.setStiffness(0.3 * maxStiffness);
-        // mat10.setDynamicFriction(0.6);
-        // mat10.setStaticFriction(0.6);
-        body->setMaterial(mat10);
-        body->setStiffness(0.3 * maxStiffness);
-        body->setFriction(0.6, 0.6);
+        block->setShowEnabled(false, true); // hide the box visuals
+        // block->setStiffness(0.3 * maxStiffness);
+        block->setFriction(0.6, 0.6);
 
-        body->setMass(0.05);
+        block->setMass(0.05);
 
         // estimate their inertia properties
-        body->estimateInertia();
+        block->estimateInertia();
 
         // create dynamic models
-        body->buildDynamicModel();
+        block->buildDynamicModel();
 
         // create collision detector for haptic interaction
-        body->createAABBCollisionDetector(toolRadius);
+        block->createAABBCollisionDetector(toolRadius);
 
         // set friction values
-        body->setSurfaceFriction(0.4);
+        block->setSurfaceFriction(0.4);
 
         // set position of each cube
-        body->setLocalPos(0.0, 0.0, 0.5);
+        block->setLocalPos(0.0, 0.0, 0.5);
 
-        // cMultiMesh *aa = newBlock("dirt", "./Models/Block_simple.obj");
-        // body->addChild(aa);
+        block->m_material->setWhite();
+        block->setUseMaterial(true, true);
+        block->m_material->setStiffness(0.3 * maxStiffness);
+
+        cMultiMesh *aa = newMesh("dirt", "./Models/Block_simple.obj");
+        // aa->setUseDisplayList(true); // optional
+        aa->setUseTransparency(false);
+
+        block->addChild(aa);
 
         bulletWorld->computeBoundaryBox(true);
 
-        return body;
+        return block;
     }
 
 private:
     static cTexture2dPtr newTexture(const char textureName[]);
     static cTexture2dPtr newMersTexture(const char textureName[]);
-    static cMultiMesh *newBlock(const char textureName[], const char loadPath[]);
+    static cMultiMesh *newMesh(const char textureName[], const char loadPath[]);
+    static cBulletBox *newBlock(const char textureName[], const char loadPath[]);
 };
+void BlockSetup::requiredBlock(cBulletBox *block)
+{
+    // estimate their inertia properties
+    block->estimateInertia();
 
-cMultiMesh *BlockSetup::newSimpleBlock(const char textureName[])
+    // create dynamic models
+    block->buildDynamicModel();
+
+    // create collision detector for haptic interaction
+    block->createAABBCollisionDetector(toolRadius);
+}
+cBulletBox *BlockSetup::newBlock(const char textureName[], const char loadPath[])
+{
+    cBulletBox *block = new cBulletBox(bulletWorld, box_scale, box_scale, box_scale);
+
+    block->setShowEnabled(false, true); // hide the box visuals
+    block->setFriction(0.6, 0.6);
+
+    block->setMass(0.05);
+
+    // set friction values
+    block->setSurfaceFriction(0.4);
+
+    // set position of each cube
+    block->setLocalPos(0.0, 0.0, 0.5);
+
+    block->m_material->setWhite();
+    block->setUseMaterial(true, true);
+    block->m_material->setStiffness(0.3 * maxStiffness);
+
+    cMultiMesh *simple_cube = BlockSetup::newMesh(textureName, loadPath);
+    simple_cube->setUseTransparency(false);
+
+    block->addChild(simple_cube);
+
+    bulletWorld->computeBoundaryBox(true);
+    return block;
+}
+
+cBulletBox *BlockSetup::newSimpleBlock(const char textureName[])
 {
     return newBlock(textureName, "./Models/Block_simple.obj");
 }
 
-cMultiMesh *BlockSetup::newTopBlock(const char textureName[])
+cBulletBox *BlockSetup::newTopBlock(const char textureName[])
 {
     return newBlock(textureName, "./Models/Block_top_and_bottom.obj");
 }
 
-cMultiMesh *BlockSetup::newFullBlock(const char textureName[])
+cBulletBox *BlockSetup::newFullBlock(const char textureName[])
 {
     return newBlock(textureName, "./Models/Block_full_sides.obj");
 }
 
-cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[])
+cMultiMesh *BlockSetup::newMesh(const char textureName[], const char loadPath[])
 {
     cMultiMesh *simple_cube;
     simple_cube = new cMultiMesh();
@@ -87,16 +127,6 @@ cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[]
     simple_cube->m_material->setWhite();
     simple_cube->setUseTexture(true, true);
     simple_cube->setUseMaterial(true, true);
-    // disable culling so that faces are rendered on both sides
-    // simple_cube->setUseCulling(false);
-
-    // compute a boundary box
-    simple_cube->computeBoundaryBox(true);
-    // show/hide boundary box
-    simple_cube->setShowBoundaryBox(false);
-
-    // compute collision detection algorithm
-    simple_cube->createAABBCollisionDetector(toolRadius);
 
     // enable display list for faster graphic rendering
     simple_cube->setUseDisplayList(true);
@@ -104,14 +134,9 @@ cMultiMesh *BlockSetup::newBlock(const char textureName[], const char loadPath[]
     // center object in scene
     simple_cube->setLocalPos(-1.0 * simple_cube->getBoundaryCenter());
 
-    // rotate object in scene
-    // simple_cube->rotateExtrinsicEulerAnglesDeg(0, 0, 90, C_EULER_ORDER_XYZ);
-
-    // compute all edges of object for which adjacent triangles have more than 40 degree angle
-    simple_cube->computeAllEdges(0);
-
     simple_cube->setTexture(BlockSetup::newTexture(textureName));
 
+    simple_cube->deleteCollisionDetector();
     // todo shading using mers texture
 
     return simple_cube;
