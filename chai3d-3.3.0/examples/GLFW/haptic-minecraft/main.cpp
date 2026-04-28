@@ -641,6 +641,10 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     {
         bulletWorld->addChild(Blocks::crafterBlock());
     }
+    else if ((a_key == GLFW_KEY_S))
+    {
+        bulletWorld->addChild(Blocks::spongeBlock());
+    }
 }
 
 //---------------------------------------------------------------------------
