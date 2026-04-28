@@ -49,8 +49,8 @@
 using namespace chai3d;
 using namespace std;
 //---------------------------------------------------------------------------
-#include "CBullet.h"
-#include "Blocks.h"
+#include "CODE.h"
+#include "Blocks.h";
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
@@ -76,6 +76,9 @@ bool mirroredDisplay = false;
 // CHAI3D VARIABLES
 //---------------------------------------------------------------------------
 
+// a world that contains all objects of the virtual environment
+cWorld *world;
+
 // a camera to render the world in the window display
 cCamera *camera;
 
@@ -94,25 +97,28 @@ shared_ptr<cGenericHapticDevice> hapticDevice;
 // a virtual tool representing the haptic device in the scene
 cGenericTool *tool;
 
-// a label to display the rates [Hz] at which the simulation is running
+// a label to display the rate [Hz] at which the simulation is running
 cLabel *labelRates;
 
 //---------------------------------------------------------------------------
-// BULLET MODULE VARIABLES
+// ODE MODULE VARIABLES
 //---------------------------------------------------------------------------
 
-// bullet objects
-cBulletBox *bulletBox0;
-cBulletBox *bulletBox1;
-cBulletBox *bulletBox2;
+// ODE world
+// cODEWorld *ODEWorld;
 
-// bullet static walls and ground
-cBulletStaticPlane *bulletInvisibleWall1;
-cBulletStaticPlane *bulletInvisibleWall2;
-cBulletStaticPlane *bulletInvisibleWall3;
-cBulletStaticPlane *bulletInvisibleWall4;
-cBulletStaticPlane *bulletInvisibleWall5;
-cBulletStaticPlane *bulletGround;
+// ODE objects
+cODEGenericBody *ODEBody0;
+cODEGenericBody *ODEBody1;
+cODEGenericBody *ODEBody2;
+
+// ODE objects
+cODEGenericBody *ODEGPlane0;
+cODEGenericBody *ODEGPlane1;
+cODEGenericBody *ODEGPlane2;
+cODEGenericBody *ODEGPlane3;
+cODEGenericBody *ODEGPlane4;
+cODEGenericBody *ODEGPlane5;
 
 //---------------------------------------------------------------------------
 // GENERAL VARIABLES
@@ -147,9 +153,9 @@ int framebufferH = 0;
 // swap interval for the display context (vertical synchronization)
 int swapInterval = 1;
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // DECLARED FUNCTIONS
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // callback when the window is resized
 void onWindowSizeCallback(GLFWwindow *a_window, int a_width, int a_height);
@@ -175,14 +181,17 @@ void renderHaptics(void);
 // this function closes the application
 void close(void);
 
+cODEGenericBody *test2();
+
 //===========================================================================
 /*
-    DEMO:    01-Bullet-cube.cpp
+    DEMO:    01-ODE-cubic.cpp
 
-    This example illustrates the use of the Bullet framework for simulating
+    This example illustrates the use of the ODE framework for simulating
     haptic interaction with dynamic bodies. In this scene we create 3
-    blocks to which we assign dynamic properties. Haptic interactions
-    are computed and forces are applied to the dynamic models.
+    cubic meshes that we individually attach to ODE bodies. Haptic interactions
+    are computer by using the finger-proxy haptic model and forces are
+    propagated to the ODE representation.
  */
 //===========================================================================
 
@@ -195,7 +204,7 @@ int main(int argc, char *argv[])
     cout << endl;
     cout << "-----------------------------------" << endl;
     cout << "CHAI3D" << endl;
-    cout << "Demo: 01-Bullet-cube" << endl;
+    cout << "Demo: 01-ODE-cubic" << endl;
     cout << "Copyright 2003-2024" << endl;
     cout << "-----------------------------------" << endl
          << endl
@@ -204,11 +213,7 @@ int main(int argc, char *argv[])
          << endl;
     cout << "[g] - Enable/Disable gravity" << endl;
     cout << "[f] - Enable/Disable full screen mode" << endl;
-    cout << "[m] - Enable/Disable vertical mirroring" << endl
-         << endl;
-    cout << "[d] - Summon dirt block" << endl;
-    cout << "[r] - Summon grass block" << endl;
-    cout << "[c] - Summon crafter block" << endl;
+    cout << "[m] - Enable/Disable vertical mirroring" << endl;
     cout << "[q] - Exit application" << endl;
     cout << endl
          << endl;
@@ -309,15 +314,15 @@ int main(int argc, char *argv[])
     // WORLD - CAMERA - LIGHTING
     //-----------------------------------------------------------------------
 
-    // create a dynamic world.
-    bulletWorld = new cBulletWorld();
+    // create a new world.
+    world = new cWorld();
 
     // set the background color of the environment
-    bulletWorld->m_backgroundColor.setWhite();
+    world->m_backgroundColor.setWhite();
 
     // create a camera and insert it into the virtual world
-    camera = new cCamera(bulletWorld);
-    bulletWorld->addChild(camera);
+    camera = new cCamera(world);
+    world->addChild(camera);
 
     // position and orient the camera
     camera->set(cVector3d(2.5, 0.0, 0.3),  // camera position (eye)
@@ -338,10 +343,10 @@ int main(int argc, char *argv[])
     camera->setMirrorVertical(mirroredDisplay);
 
     // create a light source
-    light = new cSpotLight(bulletWorld);
+    light = new cSpotLight(world);
 
     // attach light to camera
-    bulletWorld->addChild(light);
+    world->addChild(light);
 
     // enable light source
     light->setEnabled(true);
@@ -381,15 +386,15 @@ int main(int argc, char *argv[])
     // create a tool (gripper or pointer)
     if (hapticDeviceInfo.m_actuatedGripper)
     {
-        tool = new cToolGripper(bulletWorld);
+        tool = new cToolGripper(world);
     }
     else
     {
-        tool = new cToolCursor(bulletWorld);
+        tool = new cToolCursor(world);
     }
 
     // insert tool into world
-    bulletWorld->addChild(tool);
+    world->addChild(tool);
 
     // connect the haptic device to the virtual tool
     tool->setHapticDevice(hapticDevice);
@@ -427,11 +432,11 @@ int main(int argc, char *argv[])
     camera->m_frontLayer->addChild(labelRates);
 
     //-----------------------------------------------------------------------
-    // SETUP BULLET WORLD AND OBJECTS
+    // CREATE ODE WORLD AND OBJECTS
     //-----------------------------------------------------------------------
 
     //////////////////////////////////////////////////////////////////////////
-    // BULLET WORLD
+    // ODE WORLD
     //////////////////////////////////////////////////////////////////////////
 
     // read the scale factor between the physical workspace of the haptic
@@ -442,23 +447,47 @@ int main(int argc, char *argv[])
     // double maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
     maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
 
+    // create an ODE world to simulate dynamic bodies
+    ODEWorld = new cODEWorld(world);
+
+    // add ODE world as a node inside world
+    world->addChild(ODEWorld);
+
     // set some gravity
-    bulletWorld->setGravity(0.0, 0.0, -9.8);
+    ODEWorld->setGravity(cVector3d(0.00, 0.00, -9.81));
+
+    // define damping properties
+    ODEWorld->setAngularDamping(0.00002);
+    ODEWorld->setLinearDamping(0.00002);
 
     //////////////////////////////////////////////////////////////////////////
-    // 3 BULLET BLOCKS
+    // 3 ODE BLOCKS
     //////////////////////////////////////////////////////////////////////////
-    double size = 0.4;
 
-    // create three objects that are added to the world
-    bulletBox0 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox0);
+    // create a new ODE object that is automatically added to the ODE world
+    ODEBody0 = new cODEGenericBody(ODEWorld);
+    ODEBody1 = new cODEGenericBody(ODEWorld);
+    ODEBody2 = new cODEGenericBody(ODEWorld);
 
-    bulletBox1 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox1);
+    // cODEGenericBody *block = BlockSetup::test();
+    // ODEWorld->addChild(block);
+    BlockSetup::test();
 
-    bulletBox2 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox2);
+    // create a virtual mesh  that will be used for the geometry representation of the dynamic body
+    cMesh *object0 = new cMesh();
+    cMesh *object1 = new cMesh();
+    cMesh *object2 = new cMesh();
+
+    // create a cube mesh
+    double size = 0.40;
+    cCreateBox(object0, size, size, size);
+    object0->createAABBCollisionDetector(toolRadius);
+
+    cCreateBox(object1, size, size, size);
+    object1->createAABBCollisionDetector(toolRadius);
+
+    cCreateBox(object2, size, size, size);
+    object2->createAABBCollisionDetector(toolRadius);
 
     // define some material properties for each cube
     cMaterial mat0, mat1, mat2;
@@ -466,77 +495,115 @@ int main(int argc, char *argv[])
     mat0.setStiffness(0.3 * maxStiffness);
     mat0.setDynamicFriction(0.6);
     mat0.setStaticFriction(0.6);
-    bulletBox0->setMaterial(mat0);
+    object0->setMaterial(mat0);
 
     mat1.setBlueRoyal();
     mat1.setStiffness(0.3 * maxStiffness);
     mat1.setDynamicFriction(0.6);
     mat1.setStaticFriction(0.6);
-    bulletBox1->setMaterial(mat1);
+    object1->setMaterial(mat1);
 
     mat2.setGreenDarkSea();
     mat2.setStiffness(0.3 * maxStiffness);
     mat2.setDynamicFriction(0.6);
     mat2.setStaticFriction(0.6);
-    bulletBox2->setMaterial(mat2);
+    object2->setMaterial(mat2);
+
+    // add mesh to ODE object
+    ODEBody0->setImageModel(object0);
+    ODEBody1->setImageModel(object1);
+    ODEBody2->setImageModel(object2);
+
+    // create a dynamic model of the ODE object. Here we decide to use a box just like
+    // the object mesh we just defined
+    ODEBody0->createDynamicBox(size, size, size);
+    ODEBody1->createDynamicBox(size, size, size);
+    ODEBody2->createDynamicBox(size, size, size);
 
     // define some mass properties for each cube
-    bulletBox0->setMass(0.05);
-    bulletBox1->setMass(0.05);
-    bulletBox2->setMass(0.05);
-
-    // estimate their inertia properties
-    bulletBox0->estimateInertia();
-    bulletBox1->estimateInertia();
-    bulletBox2->estimateInertia();
-
-    // create dynamic models
-    bulletBox0->buildDynamicModel();
-    bulletBox1->buildDynamicModel();
-    bulletBox2->buildDynamicModel();
-
-    // create collision detector for haptic interaction
-    bulletBox0->createAABBCollisionDetector(toolRadius);
-    bulletBox1->createAABBCollisionDetector(toolRadius);
-    bulletBox2->createAABBCollisionDetector(toolRadius);
-
-    // set friction values
-    bulletBox0->setSurfaceFriction(0.4);
-    bulletBox1->setSurfaceFriction(0.4);
-    bulletBox2->setSurfaceFriction(0.4);
+    ODEBody0->setMass(0.05);
+    ODEBody1->setMass(0.05);
+    ODEBody2->setMass(0.05);
 
     // set position of each cube
-    bulletBox0->setLocalPos(0.0, -0.6, 0.5);
-    bulletBox1->setLocalPos(0.0, 0.6, 0.5);
-    bulletBox2->setLocalPos(0.0, 0.0, 0.5);
+    ODEBody0->setLocalPos(0.0, -0.6, -0.5);
+    ODEBody1->setLocalPos(0.0, 0.6, -0.5);
+    ODEBody2->setLocalPos(0.0, 0.0, -0.5);
 
     // rotate central cube 45 degrees around z-axis
-    bulletBox0->rotateAboutGlobalAxisDeg(0, 0, 1, 45);
+    ODEBody0->rotateAboutGlobalAxisDeg(0, 0, 1, 45);
 
+    // jobB DAK BAKJBB
+
+    cODEGenericBody *ODEBodyTest = new cODEGenericBody(ODEWorld);
+    cODEGenericBody *ODEBodyTest3 = new cODEGenericBody(ODEWorld);
+
+    // create a virtual mesh  that will be used for the geometry representation of the dynamic body
+    cMesh *objectTest = new cMesh();
+
+    // create a cube mesh
+    cCreateBox(objectTest, size2, size2, size2);
+    objectTest->createAABBCollisionDetector(toolRadius);
+    objectTest->setHapticEnabled(true, true);
+
+    cMaterial matTest;
+    matTest.setPurpleAmethyst();
+    matTest.setStiffness(0.3 * maxStiffness);
+    matTest.setDynamicFriction(0.6);
+    matTest.setStaticFriction(0.6);
+    objectTest->setMaterial(matTest);
+
+    ODEBodyTest->setImageModel(objectTest);
+    ODEBodyTest->addChild(objectTest);
+
+    // create a dynamic model of the ODE object. Here we decide to use a box just like
+    // the object mesh we just defined
+    ODEBodyTest->createDynamicBox(size2, size2, size2);
+
+    // ODEBodyTest->setStiffness(0.3 * maxStiffness);
+    // ODEBodyTest->setFriction(0.6, 0.6);
+
+    // define some mass properties for each cube
+    ODEBodyTest->setMass(0.05);
+
+    // set position of each cube
+    ODEBodyTest->setLocalPos(0.0, 0.0, -0.8);
+
+    // test2();
     //////////////////////////////////////////////////////////////////////////
-    // INVISIBLE WALLS
+    // 6 ODE INVISIBLE WALLS
     //////////////////////////////////////////////////////////////////////////
 
-    // we create 5 static walls to contain the dynamic objects within a limited workspace
-    double planeWidth = 1.0;
-    bulletInvisibleWall1 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 0.0, -1.0), -2.0 * planeWidth);
-    bulletInvisibleWall2 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, -1.0, 0.0), -planeWidth);
-    bulletInvisibleWall3 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 1.0, 0.0), -planeWidth);
-    bulletInvisibleWall4 = new cBulletStaticPlane(bulletWorld, cVector3d(-1.0, 0.0, 0.0), -planeWidth);
-    bulletInvisibleWall5 = new cBulletStaticPlane(bulletWorld, cVector3d(1.0, 0.0, 0.0), -0.8 * planeWidth);
+    // we create 6 static walls to contains the 3 cubes within a limited workspace
+    ODEGPlane0 = new cODEGenericBody(ODEWorld);
+    ODEGPlane1 = new cODEGenericBody(ODEWorld);
+    ODEGPlane2 = new cODEGenericBody(ODEWorld);
+    ODEGPlane3 = new cODEGenericBody(ODEWorld);
+    ODEGPlane4 = new cODEGenericBody(ODEWorld);
+    ODEGPlane5 = new cODEGenericBody(ODEWorld);
+
+    int w = 1.0;
+    ODEGPlane0->createStaticPlane(cVector3d(0.0, 0.0, 2.0 * w), cVector3d(0.0, 0.0, -1.0));
+    ODEGPlane1->createStaticPlane(cVector3d(0.0, 0.0, -w), cVector3d(0.0, 0.0, 1.0));
+    ODEGPlane2->createStaticPlane(cVector3d(0.0, w, 0.0), cVector3d(0.0, -1.0, 0.0));
+    ODEGPlane3->createStaticPlane(cVector3d(0.0, -w, 0.0), cVector3d(0.0, 1.0, 0.0));
+    ODEGPlane4->createStaticPlane(cVector3d(w, 0.0, 0.0), cVector3d(-1.0, 0.0, 0.0));
+    ODEGPlane5->createStaticPlane(cVector3d(-0.8 * w, 0.0, 0.0), cVector3d(1.0, 0.0, 0.0));
 
     //////////////////////////////////////////////////////////////////////////
     // GROUND
     //////////////////////////////////////////////////////////////////////////
 
-    // create ground plane
-    bulletGround = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 0.0, 1.0), -planeWidth);
+    // create a mesh that represents the ground
+    cMesh *ground = new cMesh();
+    ODEWorld->addChild(ground);
 
-    // add plane to world as we will want to make it visibe
-    bulletWorld->addChild(bulletGround);
+    // create a plane
+    double groundSize = 3.0;
+    cCreatePlane(ground, groundSize, groundSize);
 
-    // create a mesh plane where the static plane is located
-    cCreatePlane(bulletGround, 3.0, 3.0, bulletGround->getPlaneConstant() * bulletGround->getPlaneNormal());
+    // position ground in world where the invisible ODE plane is located (ODEGPlane1)
+    ground->setLocalPos(0.0, 0.0, -1.0);
 
     // define some material properties and apply to mesh
     cMaterial matGround;
@@ -545,13 +612,10 @@ int main(int argc, char *argv[])
     matGround.setStaticFriction(0.0);
     matGround.setWhite();
     matGround.m_emission.setGrayLevel(0.3);
-    bulletGround->setMaterial(matGround);
+    ground->setMaterial(matGround);
 
-    // setup collision detector for haptic interaction
-    bulletGround->createAABBCollisionDetector(toolRadius);
-
-    // set friction values
-    bulletGround->setSurfaceFriction(0.4);
+    // setup collision detector
+    ground->createAABBCollisionDetector(toolRadius);
 
     //--------------------------------------------------------------------------
     // VIEWPORT DISPLAY
@@ -654,13 +718,13 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     // option - enable/disable gravity
     else if (a_key == GLFW_KEY_G)
     {
-        if (bulletWorld->getGravity().length() > 0.0)
+        if (ODEWorld->getGravity().length() > 0.0)
         {
-            bulletWorld->setGravity(0.0, 0.0, 0.0);
+            ODEWorld->setGravity(cVector3d(0.0, 0.0, 0.0));
         }
         else
         {
-            bulletWorld->setGravity(0.0, 0.0, -9.8);
+            ODEWorld->setGravity(cVector3d(0.0, 0.0, -9.81));
         }
     }
 
@@ -701,28 +765,41 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
         mirroredDisplay = !mirroredDisplay;
         camera->setMirrorVertical(mirroredDisplay);
     }
-
-    else if ((a_key == GLFW_KEY_D))
-    {
-        cout << "added dirt block" << endl;
-        bulletWorld->addChild(Blocks::dirtBlock());
-    }
-    else if ((a_key == GLFW_KEY_R))
-    {
-        bulletWorld->addChild(Blocks::grassBlock());
-    }
-    else if ((a_key == GLFW_KEY_C))
-    {
-        bulletWorld->addChild(Blocks::crafterBlock());
-    }
     else if ((a_key == GLFW_KEY_J))
     {
-        cBulletBox *block = BlockSetup::test();
 
-        bulletWorld->addChild(block);
-        tool->initialize();
+        cODEGenericBody *ODEBodyTest2 = new cODEGenericBody(ODEWorld);
 
-        tool->start();
+        // create a virtual mesh  that will be used for the geometry representation of the dynamic body
+        cMesh *objectTest2 = new cMesh();
+
+        // create a cube mesh
+        cCreateBox(objectTest2, size2, size2, size2);
+        objectTest2->createAABBCollisionDetector(toolRadius);
+        objectTest2->setHapticEnabled(true, true);
+
+        cMaterial matTest2;
+        matTest2.setBlack();
+        matTest2.setStiffness(0.3 * maxStiffness);
+        matTest2.setDynamicFriction(0.6);
+        matTest2.setStaticFriction(0.6);
+        objectTest2->setMaterial(matTest2);
+
+        ODEBodyTest2->setImageModel(objectTest2);
+        ODEBodyTest2->addChild(objectTest2);
+
+        // create a dynamic model of the ODE object. Here we decide to use a box just like
+        // the object mesh we just defined
+        ODEBodyTest2->createDynamicBox(size2, size2, size2);
+
+        // ODEBodyTest->setStiffness(0.3 * maxStiffness);
+        // ODEBodyTest->setFriction(0.6, 0.6);
+
+        // define some mass properties for each cube
+        ODEBodyTest2->setMass(0.05);
+
+        // set position of each cube
+        ODEBodyTest2->setLocalPos(0.0, 0.0, -0.8);
     }
 }
 
@@ -744,7 +821,7 @@ void close(void)
 
     // delete resources
     delete hapticsThread;
-    delete bulletWorld;
+    delete world;
     delete handler;
 }
 
@@ -778,7 +855,7 @@ void renderGraphics(void)
     /////////////////////////////////////////////////////////////////////
 
     // update shadow maps (if any)
-    bulletWorld->updateShadowMaps(false, mirroredDisplay);
+    world->updateShadowMaps(false, mirroredDisplay);
 
     // render world
     viewport->renderView(framebufferW, framebufferH);
@@ -798,6 +875,44 @@ void renderGraphics(void)
     freqCounterGraphics.signal(1);
 }
 
+/* cODEGenericBody *test2()
+{
+    // create a virtual mesh  that will be used for the geometry representation of the dynamic body
+    objectTest3 = new cMesh();
+
+    // create a cube mesh
+    cCreateBox(objectTest3, size2, size2, size2);
+    objectTest3->createAABBCollisionDetector(toolRadius);
+    objectTest3->setHapticEnabled(true, true);
+
+    cMaterial matTest3;
+    matTest3.setRedDarkSalmon();
+    matTest3.setStiffness(0.3 * maxStiffness);
+    matTest3.setDynamicFriction(0.6);
+    matTest3.setStaticFriction(0.6);
+    objectTest3->setMaterial(matTest3);
+
+    ODEBodyTest3->setImageModel(objectTest3);
+    ODEBodyTest3->addChild(objectTest3);
+
+    // create a dynamic model of the ODE object. Here we decide to use a box just like
+    // the object mesh we just defined
+    ODEBodyTest3->createDynamicBox(size2, size2, size2);
+
+    // ODEBodyTest->setStiffness(0.3 * maxStiffness);
+    // ODEBodyTest->setFriction(0.6, 0.6);
+
+    // define some mass properties for each cube
+    ODEBodyTest3->setMass(0.05);
+
+    // set position of each cube
+    ODEBodyTest3->setLocalPos(0.0, 0.0, -0.8);
+
+    // ODEWorld->addChild(ODEBodyTest);
+
+    return ODEBodyTest3;
+}
+ */
 //---------------------------------------------------------------------------
 
 void renderHaptics(void)
@@ -835,7 +950,7 @@ void renderHaptics(void)
         /////////////////////////////////////////////////////////////////////
 
         // compute global reference frames for each object
-        bulletWorld->computeGlobalPositions(true);
+        world->computeGlobalPositions(true);
 
         // update position and orientation of tool
         tool->updateFromDevice();
@@ -866,41 +981,23 @@ void renderHaptics(void)
 
                 // given the mesh object we may be touching, we search for its owner which
                 // could be the mesh itself or a multi-mesh object. Once the owner found, we
-                // look for the parent that will point to the Bullet object itself.
-                cGenericObject *object = collisionEvent->m_object;
+                // look for the parent that will point to the ODE object itself.
+                cGenericObject *object = collisionEvent->m_object->getOwner()->getOwner();
 
-                // walk up the hierarchy until we find a Bullet object
-                cBulletGenericObject *bulletobject = nullptr;
-                int count = 0;
-                while (object != nullptr)
+                // cast to ODE object
+                cODEGenericBody *ODEobject = dynamic_cast<cODEGenericBody *>(object);
+
+                // if ODE object, we apply interaction forces
+                if (ODEobject != NULL)
                 {
-                    count += 1;
-                    bulletobject = dynamic_cast<cBulletGenericObject *>(object);
-                    // cout << count << endl;
-                    if (bulletobject)
-                    {
-                        // cout << "Found" << endl;
-                        break;
-                    }
-
-                    object = object->getParent();
-                }
-
-                // cast to Bullet object
-                // cBulletGenericObject *bulletobject = dynamic_cast<cBulletGenericObject *>(object);
-
-                // if Bullet object, we apply interaction forces
-                if (bulletobject != NULL)
-                {
-                    bulletobject->addExternalForceAtPoint(-interactionPoint->getLastComputedForce(),
-                                                          collisionEvent->m_globalPos - object->getLocalPos());
-                    cout << (-interactionPoint->getLastComputedForce()) << endl;
+                    ODEobject->addExternalForceAtPoint(-0.3 * interactionPoint->getLastComputedForce(),
+                                                       collisionEvent->m_globalPos);
                 }
             }
         }
 
         // update simulation
-        bulletWorld->updateDynamics(timeInterval);
+        ODEWorld->updateDynamics(timeInterval);
     }
 
     // exit haptics thread

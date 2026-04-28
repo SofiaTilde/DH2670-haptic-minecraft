@@ -33,7 +33,7 @@
     CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
     LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
     ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-    POSSIBILITY OF SUCH DAMAGE.
+    POSSIBILITY OF SUCH DAMAGE. 
 
     \author    <http://www.chai3d.org>
     \author    Francois Conti
@@ -49,8 +49,7 @@
 using namespace chai3d;
 using namespace std;
 //---------------------------------------------------------------------------
-#include "CBullet.h"
-#include "Blocks.h"
+#include "CODE.h"
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
@@ -59,7 +58,7 @@ using namespace std;
 
 // stereo Mode
 /*
-    C_STEREO_DISABLED:            Stereo is disabled
+    C_STEREO_DISABLED:            Stereo is disabled 
     C_STEREO_ACTIVE:              Active stereo for OpenGL NVDIA QUADRO cards
     C_STEREO_PASSIVE_LEFT_RIGHT:  Passive stereo where L/R images are rendered next to each other
     C_STEREO_PASSIVE_TOP_BOTTOM:  Passive stereo where L/R images are rendered above each other
@@ -72,47 +71,56 @@ bool fullscreen = false;
 // mirrored display
 bool mirroredDisplay = false;
 
+
 //---------------------------------------------------------------------------
 // CHAI3D VARIABLES
 //---------------------------------------------------------------------------
 
+// a world that contains all objects of the virtual environment
+cWorld* world;
+
 // a camera to render the world in the window display
-cCamera *camera;
+cCamera* camera;
 
 // a viewport to display the scene viewed by the camera
-cViewport *viewport = nullptr;
+cViewport* viewport = nullptr;
 
 // a light source to illuminate the objects in the world
 cSpotLight *light;
 
 // a haptic device handler
-cHapticDeviceHandler *handler;
+cHapticDeviceHandler* handler;
 
 // a pointer to the current haptic device
 shared_ptr<cGenericHapticDevice> hapticDevice;
 
 // a virtual tool representing the haptic device in the scene
-cGenericTool *tool;
+cGenericTool* tool;
 
-// a label to display the rates [Hz] at which the simulation is running
-cLabel *labelRates;
+// a label to display the rate [Hz] at which the simulation is running
+cLabel* labelRates;
+
 
 //---------------------------------------------------------------------------
-// BULLET MODULE VARIABLES
+// ODE MODULE VARIABLES
 //---------------------------------------------------------------------------
 
-// bullet objects
-cBulletBox *bulletBox0;
-cBulletBox *bulletBox1;
-cBulletBox *bulletBox2;
+// ODE world
+cODEWorld* ODEWorld;
 
-// bullet static walls and ground
-cBulletStaticPlane *bulletInvisibleWall1;
-cBulletStaticPlane *bulletInvisibleWall2;
-cBulletStaticPlane *bulletInvisibleWall3;
-cBulletStaticPlane *bulletInvisibleWall4;
-cBulletStaticPlane *bulletInvisibleWall5;
-cBulletStaticPlane *bulletGround;
+// ODE objects
+cODEGenericBody* ODEBody0;
+cODEGenericBody* ODEBody1;
+cODEGenericBody* ODEBody2;
+
+// ODE objects
+cODEGenericBody* ODEGPlane0;
+cODEGenericBody* ODEGPlane1;
+cODEGenericBody* ODEGPlane2;
+cODEGenericBody* ODEGPlane3;
+cODEGenericBody* ODEGPlane4;
+cODEGenericBody* ODEGPlane5;
+
 
 //---------------------------------------------------------------------------
 // GENERAL VARIABLES
@@ -131,10 +139,10 @@ cFrequencyCounter freqCounterGraphics;
 cFrequencyCounter freqCounterHaptics;
 
 // haptic thread
-cThread *hapticsThread;
+cThread* hapticsThread;
 
 // a handle to window display context
-GLFWwindow *window = nullptr;
+GLFWwindow* window = nullptr;
 
 // current size of GLFW window
 int windowW = 0;
@@ -147,24 +155,25 @@ int framebufferH = 0;
 // swap interval for the display context (vertical synchronization)
 int swapInterval = 1;
 
-//---------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // DECLARED FUNCTIONS
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // callback when the window is resized
-void onWindowSizeCallback(GLFWwindow *a_window, int a_width, int a_height);
+void onWindowSizeCallback(GLFWwindow* a_window, int a_width, int a_height);
 
 // callback when the window framebuffer is resized
-void onFrameBufferSizeCallback(GLFWwindow *a_window, int a_width, int a_height);
+void onFrameBufferSizeCallback(GLFWwindow* a_window, int a_width, int a_height);
 
 // callback when an error GLFW occurs
-void onErrorCallback(int a_error, const char *a_description);
+void onErrorCallback(int a_error, const char* a_description);
 
 // callback when a key is pressed
-void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, int a_mods);
+void onKeyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods);
 
 // callback when window content scaling is modified
-void onWindowContentScaleCallback(GLFWwindow *a_window, float a_xscale, float a_yscale);
+void onWindowContentScaleCallback(GLFWwindow* a_window, float a_xscale, float a_yscale);
 
 // this function renders the scene
 void renderGraphics(void);
@@ -175,18 +184,21 @@ void renderHaptics(void);
 // this function closes the application
 void close(void);
 
+
+
 //===========================================================================
 /*
-    DEMO:    01-Bullet-cube.cpp
+    DEMO:    01-ODE-cubic.cpp
 
-    This example illustrates the use of the Bullet framework for simulating
+    This example illustrates the use of the ODE framework for simulating
     haptic interaction with dynamic bodies. In this scene we create 3
-    blocks to which we assign dynamic properties. Haptic interactions
-    are computed and forces are applied to the dynamic models.
+    cubic meshes that we individually attach to ODE bodies. Haptic interactions
+    are computer by using the finger-proxy haptic model and forces are
+    propagated to the ODE representation.
  */
 //===========================================================================
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     //-----------------------------------------------------------------------
     // INITIALIZATION
@@ -195,23 +207,16 @@ int main(int argc, char *argv[])
     cout << endl;
     cout << "-----------------------------------" << endl;
     cout << "CHAI3D" << endl;
-    cout << "Demo: 01-Bullet-cube" << endl;
+    cout << "Demo: 01-ODE-cubic" << endl;
     cout << "Copyright 2003-2024" << endl;
-    cout << "-----------------------------------" << endl
-         << endl
-         << endl;
-    cout << "Keyboard Options:" << endl
-         << endl;
+    cout << "-----------------------------------" << endl << endl << endl;
+    cout << "Keyboard Options:" << endl << endl;
     cout << "[g] - Enable/Disable gravity" << endl;
     cout << "[f] - Enable/Disable full screen mode" << endl;
-    cout << "[m] - Enable/Disable vertical mirroring" << endl
-         << endl;
-    cout << "[d] - Summon dirt block" << endl;
-    cout << "[r] - Summon grass block" << endl;
-    cout << "[c] - Summon crafter block" << endl;
+    cout << "[m] - Enable/Disable vertical mirroring" << endl;
     cout << "[q] - Exit application" << endl;
-    cout << endl
-         << endl;
+    cout << endl << endl;
+
 
     //--------------------------------------------------------------------------
     // OPEN GL - WINDOW DISPLAY
@@ -229,7 +234,7 @@ int main(int argc, char *argv[])
     glfwSetErrorCallback(onErrorCallback);
 
     // compute desired size of window
-    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     windowW = 0.8 * mode->height;
     windowH = 0.5 * mode->height;
     int x = 0.5 * (mode->width - windowW);
@@ -295,6 +300,7 @@ int main(int argc, char *argv[])
     // set GLFW swap interval for the current display context
     glfwSwapInterval(swapInterval);
 
+
     // initialize GLEW library
 #ifdef GLEW_VERSION
     if (glewInit() != GLEW_OK)
@@ -305,24 +311,25 @@ int main(int argc, char *argv[])
     }
 #endif
 
+
     //-----------------------------------------------------------------------
     // WORLD - CAMERA - LIGHTING
     //-----------------------------------------------------------------------
 
-    // create a dynamic world.
-    bulletWorld = new cBulletWorld();
+    // create a new world.
+    world = new cWorld();
 
     // set the background color of the environment
-    bulletWorld->m_backgroundColor.setWhite();
+    world->m_backgroundColor.setWhite();
 
     // create a camera and insert it into the virtual world
-    camera = new cCamera(bulletWorld);
-    bulletWorld->addChild(camera);
+    camera = new cCamera(world);
+    world->addChild(camera);
 
     // position and orient the camera
-    camera->set(cVector3d(2.5, 0.0, 0.3),  // camera position (eye)
-                cVector3d(0.0, 0.0, -0.5), // lookat position (target)
-                cVector3d(0.0, 0.0, 1.0)); // direction of the "up" vector
+    camera->set(cVector3d (2.5, 0.0, 0.3),    // camera position (eye)
+                cVector3d (0.0, 0.0,-0.5),    // lookat position (target)
+                cVector3d (0.0, 0.0, 1.0));   // direction of the "up" vector
 
     // set the near and far clipping planes of the camera
     camera->setClippingPlanes(0.01, 10.0);
@@ -338,10 +345,10 @@ int main(int argc, char *argv[])
     camera->setMirrorVertical(mirroredDisplay);
 
     // create a light source
-    light = new cSpotLight(bulletWorld);
+    light = new cSpotLight(world);
 
     // attach light to camera
-    bulletWorld->addChild(light);
+    world->addChild(light);
 
     // enable light source
     light->setEnabled(true);
@@ -350,9 +357,9 @@ int main(int argc, char *argv[])
     light->setLocalPos(0.0, 0.0, 1.2);
 
     // define the direction of the light beam
-    light->setDir(0.0, 0.0, -1.0);
+    light->setDir(0.0, 0.0,-1.0);
 
-    // set uniform concentration level of light
+    // set uniform concentration level of light 
     light->setSpotExponent(0.0);
 
     // enable this light source to generate shadows
@@ -360,10 +367,11 @@ int main(int argc, char *argv[])
 
     // set the resolution of the shadow map
     light->m_shadowMap->setQualityLow();
-    // light->m_shadowMap->setQualityMedium();
+    //light->m_shadowMap->setQualityMedium();
 
     // set light cone half angle
     light->setCutOffAngleDeg(45);
+
 
     //-----------------------------------------------------------------------
     // HAPTIC DEVICES / TOOLS
@@ -381,15 +389,15 @@ int main(int argc, char *argv[])
     // create a tool (gripper or pointer)
     if (hapticDeviceInfo.m_actuatedGripper)
     {
-        tool = new cToolGripper(bulletWorld);
+        tool = new cToolGripper(world);
     }
     else
     {
-        tool = new cToolCursor(bulletWorld);
+        tool = new cToolCursor(world);
     }
 
     // insert tool into world
-    bulletWorld->addChild(tool);
+    world->addChild(tool);
 
     // connect the haptic device to the virtual tool
     tool->setHapticDevice(hapticDevice);
@@ -398,7 +406,7 @@ int main(int argc, char *argv[])
     tool->setWorkspaceRadius(1.3);
 
     // define a radius for the virtual tool contact points (sphere)
-    // double toolRadius = 0.06;
+    double toolRadius = 0.06;
     tool->setRadius(toolRadius, toolRadius);
 
     // enable if objects in the scene are going to rotate of translate
@@ -407,12 +415,13 @@ int main(int argc, char *argv[])
     tool->enableDynamicObjects(true);
 
     // haptic forces are enabled only if small forces are first sent to the device;
-    // this mode avoids the force spike that occurs when the application starts when
-    // the tool is located inside an object for instance.
+    // this mode avoids the force spike that occurs when the application starts when 
+    // the tool is located inside an object for instance. 
     tool->setWaitForSmallForce(true);
 
     // start the haptic tool
     tool->start();
+
 
     //--------------------------------------------------------------------------
     // WIDGETS
@@ -426,12 +435,13 @@ int main(int argc, char *argv[])
     labelRates->m_fontColor.setBlack();
     camera->m_frontLayer->addChild(labelRates);
 
+
     //-----------------------------------------------------------------------
-    // SETUP BULLET WORLD AND OBJECTS
+    // CREATE ODE WORLD AND OBJECTS
     //-----------------------------------------------------------------------
 
     //////////////////////////////////////////////////////////////////////////
-    // BULLET WORLD
+    // ODE WORLD
     //////////////////////////////////////////////////////////////////////////
 
     // read the scale factor between the physical workspace of the haptic
@@ -439,104 +449,127 @@ int main(int argc, char *argv[])
     double workspaceScaleFactor = tool->getWorkspaceScaleFactor();
 
     // stiffness properties
-    // double maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
-    maxStiffness = hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
+    double maxStiffness	= hapticDeviceInfo.m_maxLinearStiffness / workspaceScaleFactor;
+
+    // create an ODE world to simulate dynamic bodies
+    ODEWorld = new cODEWorld(world);
+
+    // add ODE world as a node inside world
+    world->addChild(ODEWorld);
 
     // set some gravity
-    bulletWorld->setGravity(0.0, 0.0, -9.8);
+    ODEWorld->setGravity(cVector3d(0.00, 0.00,-9.81));
+
+    // define damping properties
+    ODEWorld->setAngularDamping(0.00002);
+    ODEWorld->setLinearDamping(0.00002);
+
 
     //////////////////////////////////////////////////////////////////////////
-    // 3 BULLET BLOCKS
+    // 3 ODE BLOCKS
     //////////////////////////////////////////////////////////////////////////
-    double size = 0.4;
 
-    // create three objects that are added to the world
-    bulletBox0 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox0);
+    // create a new ODE object that is automatically added to the ODE world
+    ODEBody0 = new cODEGenericBody(ODEWorld);
+    ODEBody1 = new cODEGenericBody(ODEWorld);
+    ODEBody2 = new cODEGenericBody(ODEWorld);
 
-    bulletBox1 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox1);
+    // create a virtual mesh  that will be used for the geometry representation of the dynamic body
+    cMesh* object0 = new cMesh();
+    cMesh* object1 = new cMesh();
+    cMesh* object2 = new cMesh();
 
-    bulletBox2 = new cBulletBox(bulletWorld, size, size, size);
-    bulletWorld->addChild(bulletBox2);
+    // create a cube mesh
+    double size = 0.40;
+    cCreateBox(object0, size, size, size);
+    object0->createAABBCollisionDetector(toolRadius);
 
+    cCreateBox(object1, size, size, size);
+    object1->createAABBCollisionDetector(toolRadius);
+
+    cCreateBox(object2, size, size, size);
+    object2->createAABBCollisionDetector(toolRadius);
+      
     // define some material properties for each cube
     cMaterial mat0, mat1, mat2;
     mat0.setRedIndian();
     mat0.setStiffness(0.3 * maxStiffness);
     mat0.setDynamicFriction(0.6);
     mat0.setStaticFriction(0.6);
-    bulletBox0->setMaterial(mat0);
+    object0->setMaterial(mat0);
 
     mat1.setBlueRoyal();
     mat1.setStiffness(0.3 * maxStiffness);
     mat1.setDynamicFriction(0.6);
     mat1.setStaticFriction(0.6);
-    bulletBox1->setMaterial(mat1);
+    object1->setMaterial(mat1);
 
     mat2.setGreenDarkSea();
     mat2.setStiffness(0.3 * maxStiffness);
     mat2.setDynamicFriction(0.6);
     mat2.setStaticFriction(0.6);
-    bulletBox2->setMaterial(mat2);
+    object2->setMaterial(mat2);
+
+    // add mesh to ODE object
+    ODEBody0->setImageModel(object0);
+    ODEBody1->setImageModel(object1);
+    ODEBody2->setImageModel(object2);
+
+    // create a dynamic model of the ODE object. Here we decide to use a box just like
+    // the object mesh we just defined
+    ODEBody0->createDynamicBox(size, size, size);
+    ODEBody1->createDynamicBox(size, size, size);
+    ODEBody2->createDynamicBox(size, size, size);
 
     // define some mass properties for each cube
-    bulletBox0->setMass(0.05);
-    bulletBox1->setMass(0.05);
-    bulletBox2->setMass(0.05);
-
-    // estimate their inertia properties
-    bulletBox0->estimateInertia();
-    bulletBox1->estimateInertia();
-    bulletBox2->estimateInertia();
-
-    // create dynamic models
-    bulletBox0->buildDynamicModel();
-    bulletBox1->buildDynamicModel();
-    bulletBox2->buildDynamicModel();
-
-    // create collision detector for haptic interaction
-    bulletBox0->createAABBCollisionDetector(toolRadius);
-    bulletBox1->createAABBCollisionDetector(toolRadius);
-    bulletBox2->createAABBCollisionDetector(toolRadius);
-
-    // set friction values
-    bulletBox0->setSurfaceFriction(0.4);
-    bulletBox1->setSurfaceFriction(0.4);
-    bulletBox2->setSurfaceFriction(0.4);
+    ODEBody0->setMass(0.05);
+    ODEBody1->setMass(0.05);
+    ODEBody2->setMass(0.05);
 
     // set position of each cube
-    bulletBox0->setLocalPos(0.0, -0.6, 0.5);
-    bulletBox1->setLocalPos(0.0, 0.6, 0.5);
-    bulletBox2->setLocalPos(0.0, 0.0, 0.5);
+    ODEBody0->setLocalPos(0.0,-0.6,-0.5);
+    ODEBody1->setLocalPos(0.0, 0.6,-0.5);
+    ODEBody2->setLocalPos(0.0, 0.0,-0.5);
 
     // rotate central cube 45 degrees around z-axis
-    bulletBox0->rotateAboutGlobalAxisDeg(0, 0, 1, 45);
+    ODEBody0->rotateAboutGlobalAxisDeg(0,0,1, 45);
+
 
     //////////////////////////////////////////////////////////////////////////
-    // INVISIBLE WALLS
+    // 6 ODE INVISIBLE WALLS
     //////////////////////////////////////////////////////////////////////////
 
-    // we create 5 static walls to contain the dynamic objects within a limited workspace
-    double planeWidth = 1.0;
-    bulletInvisibleWall1 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 0.0, -1.0), -2.0 * planeWidth);
-    bulletInvisibleWall2 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, -1.0, 0.0), -planeWidth);
-    bulletInvisibleWall3 = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 1.0, 0.0), -planeWidth);
-    bulletInvisibleWall4 = new cBulletStaticPlane(bulletWorld, cVector3d(-1.0, 0.0, 0.0), -planeWidth);
-    bulletInvisibleWall5 = new cBulletStaticPlane(bulletWorld, cVector3d(1.0, 0.0, 0.0), -0.8 * planeWidth);
+    // we create 6 static walls to contains the 3 cubes within a limited workspace
+    ODEGPlane0 = new cODEGenericBody(ODEWorld);
+    ODEGPlane1 = new cODEGenericBody(ODEWorld);
+    ODEGPlane2 = new cODEGenericBody(ODEWorld);
+    ODEGPlane3 = new cODEGenericBody(ODEWorld);
+    ODEGPlane4 = new cODEGenericBody(ODEWorld);
+    ODEGPlane5 = new cODEGenericBody(ODEWorld);
+
+    int w = 1.0;
+    ODEGPlane0->createStaticPlane(cVector3d(0.0, 0.0,  2.0 * w), cVector3d(0.0, 0.0 ,-1.0));
+    ODEGPlane1->createStaticPlane(cVector3d(0.0, 0.0, -w), cVector3d(0.0, 0.0 , 1.0));
+    ODEGPlane2->createStaticPlane(cVector3d(0.0,  w, 0.0), cVector3d(0.0,-1.0, 0.0));
+    ODEGPlane3->createStaticPlane(cVector3d(0.0, -w, 0.0), cVector3d(0.0, 1.0, 0.0));
+    ODEGPlane4->createStaticPlane(cVector3d( w, 0.0, 0.0), cVector3d(-1.0,0.0, 0.0));
+    ODEGPlane5->createStaticPlane(cVector3d(-0.8 * w, 0.0, 0.0), cVector3d( 1.0,0.0, 0.0));
+
 
     //////////////////////////////////////////////////////////////////////////
     // GROUND
     //////////////////////////////////////////////////////////////////////////
 
-    // create ground plane
-    bulletGround = new cBulletStaticPlane(bulletWorld, cVector3d(0.0, 0.0, 1.0), -planeWidth);
+    // create a mesh that represents the ground
+    cMesh* ground = new cMesh();
+    ODEWorld->addChild(ground);
 
-    // add plane to world as we will want to make it visibe
-    bulletWorld->addChild(bulletGround);
+    // create a plane
+    double groundSize = 3.0;
+    cCreatePlane(ground, groundSize, groundSize);
 
-    // create a mesh plane where the static plane is located
-    cCreatePlane(bulletGround, 3.0, 3.0, bulletGround->getPlaneConstant() * bulletGround->getPlaneNormal());
+    // position ground in world where the invisible ODE plane is located (ODEGPlane1)
+    ground->setLocalPos(0.0, 0.0, -1.0);
 
     // define some material properties and apply to mesh
     cMaterial matGround;
@@ -545,13 +578,11 @@ int main(int argc, char *argv[])
     matGround.setStaticFriction(0.0);
     matGround.setWhite();
     matGround.m_emission.setGrayLevel(0.3);
-    bulletGround->setMaterial(matGround);
+    ground->setMaterial(matGround);
 
-    // setup collision detector for haptic interaction
-    bulletGround->createAABBCollisionDetector(toolRadius);
+    // setup collision detector
+    ground->createAABBCollisionDetector(toolRadius);
 
-    // set friction values
-    bulletGround->setSurfaceFriction(0.4);
 
     //--------------------------------------------------------------------------
     // VIEWPORT DISPLAY
@@ -564,16 +595,18 @@ int main(int argc, char *argv[])
     // create a viewport to display the scene.
     viewport = new cViewport(camera, contentScaleW, contentScaleH);
 
+
     //-----------------------------------------------------------------------
     // START HAPTIC SIMULATION THREAD
     //-----------------------------------------------------------------------
-
+    
     // create a thread which starts the main haptics rendering loop
     hapticsThread = new cThread();
     hapticsThread->start(renderHaptics, CTHREAD_PRIORITY_HAPTICS);
 
     // setup callback when application exits
     atexit(close);
+
 
     //--------------------------------------------------------------------------
     // MAIN GRAPHIC LOOP
@@ -601,7 +634,7 @@ int main(int argc, char *argv[])
 
 //------------------------------------------------------------------------------
 
-void onWindowSizeCallback(GLFWwindow *a_window, int a_width, int a_height)
+void onWindowSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
 {
     // update window size
     windowW = a_width;
@@ -613,7 +646,7 @@ void onWindowSizeCallback(GLFWwindow *a_window, int a_width, int a_height)
 
 //------------------------------------------------------------------------------
 
-void onFrameBufferSizeCallback(GLFWwindow *a_window, int a_width, int a_height)
+void onFrameBufferSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
 {
     // update frame buffer size
     framebufferW = a_width;
@@ -622,7 +655,7 @@ void onFrameBufferSizeCallback(GLFWwindow *a_window, int a_width, int a_height)
 
 //------------------------------------------------------------------------------
 
-void onWindowContentScaleCallback(GLFWwindow *a_window, float a_xscale, float a_yscale)
+void onWindowContentScaleCallback(GLFWwindow* a_window, float a_xscale, float a_yscale)
 {
     // update window content scale factor
     viewport->setContentScale(a_xscale, a_yscale);
@@ -630,14 +663,14 @@ void onWindowContentScaleCallback(GLFWwindow *a_window, float a_xscale, float a_
 
 //------------------------------------------------------------------------------
 
-void onErrorCallback(int a_error, const char *a_description)
+void onErrorCallback(int a_error, const char* a_description)
 {
     cout << "Error: " << a_description << endl;
 }
 
 //---------------------------------------------------------------------------
 
-void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action, int a_mods)
+void onKeyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods)
 {
     // filter calls that only include a key press
     if ((a_action != GLFW_PRESS) && (a_action != GLFW_REPEAT))
@@ -654,13 +687,13 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     // option - enable/disable gravity
     else if (a_key == GLFW_KEY_G)
     {
-        if (bulletWorld->getGravity().length() > 0.0)
+        if (ODEWorld->getGravity().length() > 0.0)
         {
-            bulletWorld->setGravity(0.0, 0.0, 0.0);
+            ODEWorld->setGravity(cVector3d(0.0, 0.0, 0.0));
         }
         else
         {
-            bulletWorld->setGravity(0.0, 0.0, -9.8);
+            ODEWorld->setGravity(cVector3d(0.0, 0.0,-9.81));
         }
     }
 
@@ -671,10 +704,10 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
         fullscreen = !fullscreen;
 
         // get handle to monitor
-        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 
         // get information about monitor
-        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
         // set fullscreen or window mode
         if (fullscreen)
@@ -701,29 +734,6 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
         mirroredDisplay = !mirroredDisplay;
         camera->setMirrorVertical(mirroredDisplay);
     }
-
-    else if ((a_key == GLFW_KEY_D))
-    {
-        cout << "added dirt block" << endl;
-        bulletWorld->addChild(Blocks::dirtBlock());
-    }
-    else if ((a_key == GLFW_KEY_R))
-    {
-        bulletWorld->addChild(Blocks::grassBlock());
-    }
-    else if ((a_key == GLFW_KEY_C))
-    {
-        bulletWorld->addChild(Blocks::crafterBlock());
-    }
-    else if ((a_key == GLFW_KEY_J))
-    {
-        cBulletBox *block = BlockSetup::test();
-
-        bulletWorld->addChild(block);
-        tool->initialize();
-
-        tool->start();
-    }
 }
 
 //---------------------------------------------------------------------------
@@ -734,17 +744,14 @@ void close(void)
     simulationRunning = false;
 
     // wait for graphics and haptics loops to terminate
-    while (!simulationFinished)
-    {
-        cSleepMs(100);
-    }
+    while (!simulationFinished) { cSleepMs(100); }
 
     // close haptic device
     tool->stop();
 
     // delete resources
     delete hapticsThread;
-    delete bulletWorld;
+    delete world;
     delete handler;
 }
 
@@ -753,10 +760,7 @@ void close(void)
 void renderGraphics(void)
 {
     // sanity check
-    if (viewport == nullptr)
-    {
-        return;
-    }
+    if (viewport == nullptr) { return; }
 
     /////////////////////////////////////////////////////////////////////
     // UPDATE WIDGETS
@@ -773,12 +777,13 @@ void renderGraphics(void)
     // update position of label
     labelRates->setLocalPos((int)(0.5 * (displayW - labelRates->getWidth())), 15);
 
+
     /////////////////////////////////////////////////////////////////////
     // RENDER SCENE
     /////////////////////////////////////////////////////////////////////
 
     // update shadow maps (if any)
-    bulletWorld->updateShadowMaps(false, mirroredDisplay);
+    world->updateShadowMaps(false, mirroredDisplay);
 
     // render world
     viewport->renderView(framebufferW, framebufferH);
@@ -788,8 +793,7 @@ void renderGraphics(void)
 
     // check for any OpenGL errors
     GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-        printf("Error:  %s\n", gluErrorString(error));
+    if (error != GL_NO_ERROR) printf("Error:  %s\n", gluErrorString(error));
 
     // swap buffers
     glfwSwapBuffers(window);
@@ -803,7 +807,7 @@ void renderGraphics(void)
 void renderHaptics(void)
 {
     // simulation in now running
-    simulationRunning = true;
+    simulationRunning  = true;
     simulationFinished = false;
 
     // reset clock
@@ -811,7 +815,7 @@ void renderHaptics(void)
     clock.reset();
 
     // main haptic simulation loop
-    while (simulationRunning)
+    while(simulationRunning)
     {
         /////////////////////////////////////////////////////////////////////
         // SIMULATION TIME
@@ -830,12 +834,13 @@ void renderHaptics(void)
         // signal frequency counter
         freqCounterHaptics.signal(1);
 
+
         /////////////////////////////////////////////////////////////////////
         // HAPTIC FORCE COMPUTATION
         /////////////////////////////////////////////////////////////////////
 
         // compute global reference frames for each object
-        bulletWorld->computeGlobalPositions(true);
+        world->computeGlobalPositions(true);
 
         // update position and orientation of tool
         tool->updateFromDevice();
@@ -846,6 +851,7 @@ void renderHaptics(void)
         // send forces to haptic device
         tool->applyToDevice();
 
+
         /////////////////////////////////////////////////////////////////////
         // DYNAMIC SIMULATION
         /////////////////////////////////////////////////////////////////////
@@ -853,56 +859,39 @@ void renderHaptics(void)
         // for each interaction point of the tool we look for any contact events
         // with the environment and apply forces accordingly
         int numInteractionPoints = tool->getNumHapticPoints();
-        for (int i = 0; i < numInteractionPoints; i++)
+        for (int i=0; i<numInteractionPoints; i++)
         {
             // get pointer to next interaction point of tool
-            cHapticPoint *interactionPoint = tool->getHapticPoint(i);
+            cHapticPoint* interactionPoint = tool->getHapticPoint(i);
 
             // check all contact points
             int numContacts = interactionPoint->getNumCollisionEvents();
-            for (int k = 0; k < numContacts; k++)
+            for (int k=0; k<numContacts; k++)
             {
-                cCollisionEvent *collisionEvent = interactionPoint->getCollisionEvent(k);
+                cCollisionEvent* collisionEvent = interactionPoint->getCollisionEvent(k);
 
                 // given the mesh object we may be touching, we search for its owner which
                 // could be the mesh itself or a multi-mesh object. Once the owner found, we
-                // look for the parent that will point to the Bullet object itself.
-                cGenericObject *object = collisionEvent->m_object;
+                // look for the parent that will point to the ODE object itself.
+                cGenericObject* object = collisionEvent->m_object->getOwner()->getOwner();
 
-                // walk up the hierarchy until we find a Bullet object
-                cBulletGenericObject *bulletobject = nullptr;
-                int count = 0;
-                while (object != nullptr)
+                // cast to ODE object
+                cODEGenericBody* ODEobject = dynamic_cast<cODEGenericBody*>(object);
+
+                // if ODE object, we apply interaction forces
+                if (ODEobject != NULL)
                 {
-                    count += 1;
-                    bulletobject = dynamic_cast<cBulletGenericObject *>(object);
-                    // cout << count << endl;
-                    if (bulletobject)
-                    {
-                        // cout << "Found" << endl;
-                        break;
-                    }
-
-                    object = object->getParent();
-                }
-
-                // cast to Bullet object
-                // cBulletGenericObject *bulletobject = dynamic_cast<cBulletGenericObject *>(object);
-
-                // if Bullet object, we apply interaction forces
-                if (bulletobject != NULL)
-                {
-                    bulletobject->addExternalForceAtPoint(-interactionPoint->getLastComputedForce(),
-                                                          collisionEvent->m_globalPos - object->getLocalPos());
-                    cout << (-interactionPoint->getLastComputedForce()) << endl;
+                    ODEobject->addExternalForceAtPoint(-0.3 * interactionPoint->getLastComputedForce(),
+                                                       collisionEvent->m_globalPos);
                 }
             }
         }
 
         // update simulation
-        bulletWorld->updateDynamics(timeInterval);
+        ODEWorld->updateDynamics(timeInterval);
     }
 
     // exit haptics thread
     simulationFinished = true;
 }
+

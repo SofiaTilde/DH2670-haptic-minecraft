@@ -18,6 +18,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Haptic Minecraft 2", "examp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-Bullet-cube", "examples\GLFW\01-Bullet-cube\01-Bullet-cube-VS2022.vcxproj", "{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Haptic Minecraft 3", "examples\GLFW\haptic-minecraft3\haptic-minecraft3-VS2022.vcxproj", "{D0276A81-CD72-4D8D-8F09-61E24C8983EB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-ODE-cube", "examples\GLFW\01-ODE-cube\01-ODE-cube-VS2022.vcxproj", "{2A21CD85-22B3-41EF-89D0-3773866474F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -90,6 +94,22 @@ Global
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Release|Win32.Build.0 = Release|Win32
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Release|x64.ActiveCfg = Release|x64
 		{09AE5D8B-CC99-494B-9FCB-7F1114FE8EE9}.Release|x64.Build.0 = Release|x64
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Debug|Win32.Build.0 = Debug|Win32
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Debug|x64.ActiveCfg = Debug|x64
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Debug|x64.Build.0 = Debug|x64
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Release|Win32.ActiveCfg = Release|Win32
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Release|Win32.Build.0 = Release|Win32
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Release|x64.ActiveCfg = Release|x64
+		{D0276A81-CD72-4D8D-8F09-61E24C8983EB}.Release|x64.Build.0 = Release|x64
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Debug|Win32.Build.0 = Debug|Win32
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Debug|x64.ActiveCfg = Debug|x64
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Debug|x64.Build.0 = Debug|x64
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Release|Win32.ActiveCfg = Release|Win32
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Release|Win32.Build.0 = Release|Win32
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Release|x64.ActiveCfg = Release|x64
+		{2A21CD85-22B3-41EF-89D0-3773866474F6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
