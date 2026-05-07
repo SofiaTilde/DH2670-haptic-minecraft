@@ -9,46 +9,6 @@ public:
     static cBulletBox *newFullBlock(const char textureName[]);
     static void requiredBlock(cBulletBox *block);
 
-    static cBulletBox *test()
-    {
-        cBulletBox *block = new cBulletBox(bulletWorld, box_scale, box_scale, box_scale);
-
-        block->setShowEnabled(false, true); // hide the box visuals
-        // block->setStiffness(0.3 * maxStiffness);
-        block->setFriction(0.6, 0.6);
-
-        block->setMass(0.05);
-
-        // estimate their inertia properties
-        block->estimateInertia();
-
-        // create dynamic models
-        block->buildDynamicModel();
-
-        // create collision detector for haptic interaction
-        block->createAABBCollisionDetector(toolRadius);
-
-        // set friction values
-        block->setSurfaceFriction(0.4);
-
-        // set position of each cube
-        block->setLocalPos(0.0, 0.0, 0.5);
-
-        block->m_material->setWhite();
-        block->setUseMaterial(true, true);
-        block->m_material->setStiffness(0.3 * maxStiffness);
-
-        cMultiMesh *aa = newMesh("dirt", "./Models/Block_simple.obj");
-        // aa->setUseDisplayList(true); // optional
-        aa->setUseTransparency(false);
-
-        block->addChild(aa);
-
-        bulletWorld->computeBoundaryBox(true);
-
-        return block;
-    }
-
 private:
     static cTexture2dPtr newTexture(const char textureName[]);
     static cTexture2dPtr newMersTexture(const char textureName[]);
