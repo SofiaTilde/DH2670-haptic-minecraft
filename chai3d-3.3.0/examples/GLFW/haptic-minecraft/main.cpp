@@ -84,6 +84,7 @@ cViewport *viewport = nullptr;
 
 // a light source to illuminate the objects in the world
 cSpotLight *light;
+cSpotLight *light2;
 
 // a haptic device handler
 cHapticDeviceHandler *handler;
@@ -142,6 +143,8 @@ int framebufferH = 0;
 // swap interval for the display context (vertical synchronization)
 int swapInterval = 1;
 
+// virtual button
+bool space_button{false};
 //---------------------------------------------------------------------------
 // DECLARED FUNCTIONS
 //---------------------------------------------------------------------------
@@ -357,31 +360,40 @@ int main(int argc, char *argv[])
 
     // create a light source
     light = new cSpotLight(bulletWorld);
+    light2 = new cSpotLight(bulletWorld);
 
     // attach light to camera
     bulletWorld->addChild(light);
+    bulletWorld->addChild(light2);
 
     // enable light source
     light->setEnabled(true);
+    light2->setEnabled(true);
 
     // position the light source
     light->setLocalPos(0.0, 0.0, 1.2);
+    light2->setLocalPos(camera->getLocalPos());
 
     // define the direction of the light beam
     light->setDir(0.0, 0.0, -1.0);
+    light2->setDir(camera->getLookVector());
 
     // set uniform concentration level of light
     light->setSpotExponent(0.0);
+    light2->setSpotExponent(0.0);
 
     // enable this light source to generate shadows
     light->setShadowMapEnabled(true);
+    light2->setShadowMapEnabled(true);
 
     // set the resolution of the shadow map
     light->m_shadowMap->setQualityLow();
+    light2->m_shadowMap->setQualityLow();
     // light->m_shadowMap->setQualityMedium();
 
     // set light cone half angle
     light->setCutOffAngleDeg(45);
+    light2->setCutOffAngleDeg(45);
 
     //-----------------------------------------------------------------------
     // HAPTIC DEVICES / TOOLS
@@ -595,6 +607,11 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
         return;
     }
 
+    else if (a_key == GLFW_KEY_SPACE)
+    {
+        space_button = !space_button;
+    }
+
     // option - exit
     else if ((a_key == GLFW_KEY_ESCAPE) || (a_key == GLFW_KEY_Q))
     {
@@ -616,31 +633,44 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
 
     // option - toggle fullscreen
     else if (a_key == GLFW_KEY_W)
-    {
-        // toggle state variable
+    { // toggle state variable
         fullscreen = !fullscreen;
 
-        // get handle to monitor
+        // get monitor info
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-
-        // get information about monitor
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
 
-        // set fullscreen or window mode
         if (fullscreen)
         {
-            glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            // ----------------------------
+            // BORDERLESS FULLSCREEN MODE
+            // ----------------------------
+
+            glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
+
+            glfwSetWindowPos(window, 0, 0);
+
+            glfwSetWindowSize(window, mode->width, mode->height);
         }
         else
         {
-            int w = 0.8 * mode->height;
-            int h = 0.5 * mode->height;
-            int x = 0.5 * (mode->width - w);
-            int y = 0.5 * (mode->height - h);
-            glfwSetWindowMonitor(window, NULL, x, y, w, h, mode->refreshRate);
+            // ----------------------------
+            // WINDOWED MODE
+            // ----------------------------
+
+            glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_TRUE);
+
+            int w = (int)(0.8 * mode->width);
+            int h = (int)(0.8 * mode->height);
+
+            int x = (mode->width - w) / 2;
+            int y = (mode->height - h) / 2;
+
+            glfwSetWindowSize(window, w, h);
+            glfwSetWindowPos(window, x, y);
         }
 
-        // set the desired swap interval and number of samples to use for multisampling
+        // keep swap settings
         glfwSwapInterval(swapInterval);
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
@@ -828,8 +858,17 @@ void renderGraphics(void)
 
 //---------------------------------------------------------------------------
 
+enum cMode
+{
+    IDLE,
+    SELECTION
+};
+
 void renderHaptics(void)
 {
+    cMode state = IDLE;
+    cGenericObject *selectedObject = NULL;
+    cTransform tool_T_object;
     // simulation in now running
     simulationRunning = true;
     simulationFinished = false;
@@ -918,6 +957,82 @@ void renderHaptics(void)
                                                           collisionEvent->m_globalPos - object->getLocalPos());
                 }
             }
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        // MANIPULATION
+        /////////////////////////////////////////////////////////////////////////
+
+        // compute transformation from world to tool (haptic device)
+        cTransform world_T_tool = tool->getDeviceGlobalTransform();
+
+        // get status of user switch, or toggled on/off with space bar
+        bool button = space_button || tool->getUserSwitch(0);
+
+        //
+        // STATE 1:
+        // Idle mode - user presses the user switch
+        //
+        if ((state == IDLE) && (button == true))
+        {
+            // check if at least one contact has occurred
+
+            if (tool->getHapticPoint(0)->getNumCollisionEvents() > 0)
+            {
+                // get contact event
+                cCollisionEvent *collisionEvent = tool->getHapticPoint(0)->getCollisionEvent(0);
+
+                // get object from contact event
+                selectedObject = collisionEvent->m_object;
+                if (selectedObject != bulletGround)
+                {
+                    // get transformation from object
+                    cTransform world_T_object = selectedObject->getGlobalTransform();
+
+                    // compute inverse transformation from contact point to object
+                    cTransform tool_T_world = world_T_tool;
+                    tool_T_world.invert();
+
+                    // store current transformation tool
+                    tool_T_object = tool_T_world * world_T_object;
+
+                    // update state
+                    state = SELECTION;
+                }
+            }
+        }
+
+        //
+        // STATE 2:
+        // Selection mode - operator maintains user switch enabled and moves object
+        //
+        else if ((state == SELECTION) && (button == true))
+        {
+            // compute new transformation of object in global coordinates
+            cTransform world_T_object = world_T_tool * tool_T_object;
+
+            // compute new transformation of object in local coordinates
+            cTransform parent_T_world = selectedObject->getParent()->getLocalTransform();
+            parent_T_world.invert();
+            cTransform parent_T_object = parent_T_world * world_T_object;
+
+            // assign new local transformation to object
+            selectedObject->setLocalTransform(parent_T_object);
+
+            // set zero forces when manipulating objects
+            // tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
+            tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
+
+            tool->initialize();
+        }
+
+        //
+        // STATE 3:
+        // Finalize Selection mode - operator releases user switch.
+        //
+        else
+        {
+            state = IDLE;
         }
 
         // update simulation
