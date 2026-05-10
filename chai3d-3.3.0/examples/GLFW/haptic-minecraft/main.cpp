@@ -110,9 +110,23 @@ cBulletStaticPlane *bulletInvisibleWall4;
 cBulletStaticPlane *bulletInvisibleWall5;
 cBulletStaticPlane *bulletGround;
 
+cGenericObject *selectedObject = nullptr;
+
+cBulletGenericObject *selectedBulletObject = nullptr;
+
+cVector3d grabOffset;
+
 //---------------------------------------------------------------------------
 // GENERAL VARIABLES
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+// AUDIO VARIABLES
+//---------------------------------------------------------------------------
+cAudioDevice *audioDevice;
+
+cAudioBuffer *audioBufferDirt;
+cAudioSource *audioSourceDirt;
 
 // flag to indicate if the haptic simulation currently running
 bool simulationRunning = false;
@@ -394,6 +408,40 @@ int main(int argc, char *argv[])
     // set light cone half angle
     light->setCutOffAngleDeg(45);
     light2->setCutOffAngleDeg(45);
+
+    //-----------------------------------------------------------------------
+    // AUDIO SETUP
+    //-----------------------------------------------------------------------
+
+    // create an audio device
+    audioDevice = new cAudioDevice();
+
+    // attach audio device to camera
+    camera->attachAudioDevice(audioDevice);
+
+    // create buffer and load the single audio file from the sound folder
+    audioBufferDirt = new cAudioBuffer();
+
+    // Add this check to see if the file actually loads
+    bool fileLoaded = audioBufferDirt->loadFromFile("./Sounds/dirt2.wav");
+    /// haptic-minecraft/Sounds/dirt.wav
+    /// haptic-minecraft/main.cpp
+    if (!fileLoaded)
+    {
+        cout << "\n=========================================\n";
+        cout << "ERROR: COULD NOT FIND Sounds/dirt.wav!" << endl;
+        cout << "=========================================\n\n";
+    }
+    else
+    {
+        cout << "\n=========================================\n";
+        cout << "SUCCESS: AUDIO FILE LOADED!" << endl;
+        cout << "=========================================\n\n";
+    }
+
+    // create audio source and link it to the buffer
+    audioSourceDirt = new cAudioSource();
+    audioSourceDirt->setAudioBuffer(audioBufferDirt);
 
     //-----------------------------------------------------------------------
     // HAPTIC DEVICES / TOOLS
@@ -801,6 +849,9 @@ void close(void)
     tool->stop();
 
     // delete resources
+    delete audioDevice;
+    delete audioBufferDirt;
+    delete audioSourceDirt;
     delete hapticsThread;
     delete bulletWorld;
     delete handler;
@@ -969,70 +1020,228 @@ void renderHaptics(void)
         // get status of user switch, or toggled on/off with space bar
         bool button = space_button || tool->getUserSwitch(0);
 
+        /*         //
+                // STATE 1:
+                // Idle mode - user presses the user switch
+                //
+                if ((state == IDLE) && (button == true))
+                {
+                    // check if at least one contact has occurred
+
+                    if (tool->getHapticPoint(0)->getNumCollisionEvents() > 0)
+                    {
+                        // get contact event
+                        cCollisionEvent *collisionEvent = tool->getHapticPoint(0)->getCollisionEvent(0);
+
+                        // get object from contact event
+                        selectedObject = collisionEvent->m_object;
+                        if (selectedObject != bulletGround)
+                        {
+                            // get transformation from object
+                            cTransform world_T_object = selectedObject->getGlobalTransform();
+
+                            // compute inverse transformation from contact point to object
+                            cTransform tool_T_world = world_T_tool;
+                            tool_T_world.invert();
+
+                            // store current transformation tool
+                            tool_T_object = tool_T_world * world_T_object;
+
+                            // update state
+                            state = SELECTION;
+                        }
+                    }
+                }
+
+                //
+                // STATE 2:
+                // Selection mode - operator maintains user switch enabled and moves object
+                //
+                else if ((state == SELECTION) && (button == true))
+                {
+                    // compute new transformation of object in global coordinates
+                    cTransform world_T_object = world_T_tool * tool_T_object;
+
+                    // compute new transformation of object in local coordinates
+                    cTransform parent_T_world = selectedObject->getParent()->getLocalTransform();
+                    parent_T_world.invert();
+                    cTransform parent_T_object = parent_T_world * world_T_object;
+
+                    // assign new local transformation to object
+                    selectedObject->setLocalTransform(parent_T_object);
+
+                    // set zero forces when manipulating objects
+                    // tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
+                    tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
+
+                    tool->initialize();
+                }
+         */
         //
+        // =====================================================
         // STATE 1:
-        // Idle mode - user presses the user switch
-        //
+        // Idle mode - user presses button
+        // =====================================================
+
         if ((state == IDLE) && (button == true))
         {
-            // check if at least one contact has occurred
-
             if (tool->getHapticPoint(0)->getNumCollisionEvents() > 0)
             {
-                // get contact event
-                cCollisionEvent *collisionEvent = tool->getHapticPoint(0)->getCollisionEvent(0);
+                cCollisionEvent *collisionEvent =
+                    tool->getHapticPoint(0)->getCollisionEvent(0);
 
-                // get object from contact event
                 selectedObject = collisionEvent->m_object;
+
                 if (selectedObject != bulletGround)
                 {
-                    // get transformation from object
-                    cTransform world_T_object = selectedObject->getGlobalTransform();
+                    // find Bullet parent object
+                    cGenericObject *object = selectedObject;
 
-                    // compute inverse transformation from contact point to object
-                    cTransform tool_T_world = world_T_tool;
-                    tool_T_world.invert();
+                    selectedBulletObject = nullptr;
 
-                    // store current transformation tool
-                    tool_T_object = tool_T_world * world_T_object;
+                    while (object != nullptr)
+                    {
+                        selectedBulletObject =
+                            dynamic_cast<cBulletGenericObject *>(object);
 
-                    // update state
-                    state = SELECTION;
+                        if (selectedBulletObject)
+                            break;
+
+                        object = object->getParent();
+                    }
+
+                    if (selectedBulletObject)
+                    {
+                        btTransform trans;
+
+                        selectedBulletObject
+                            ->m_bulletRigidBody
+                            ->getMotionState()
+                            ->getWorldTransform(trans);
+
+                        btVector3 pos = trans.getOrigin();
+
+                        cVector3d objectPos(
+                            pos.x(),
+                            pos.y(),
+                            pos.z());
+
+                        // grab offset
+                        grabOffset =
+                            objectPos -
+                            world_T_tool.getLocalPos();
+
+                        state = SELECTION;
+
+                        audioSourceDirt->play();
+                    }
                 }
             }
         }
 
-        //
+        // =====================================================
         // STATE 2:
-        // Selection mode - operator maintains user switch enabled and moves object
-        //
+        // Selection mode - force-based grabbing
+        // =====================================================
+
         else if ((state == SELECTION) && (button == true))
         {
-            // compute new transformation of object in global coordinates
-            cTransform world_T_object = world_T_tool * tool_T_object;
+            if (selectedBulletObject)
+            {
+                // -----------------------------------------
+                // Desired target position
+                // -----------------------------------------
 
-            // compute new transformation of object in local coordinates
-            cTransform parent_T_world = selectedObject->getParent()->getLocalTransform();
-            parent_T_world.invert();
-            cTransform parent_T_object = parent_T_world * world_T_object;
+                cVector3d toolPos =
+                    world_T_tool.getLocalPos();
 
-            // assign new local transformation to object
-            selectedObject->setLocalTransform(parent_T_object);
+                cVector3d desiredPos =
+                    toolPos + grabOffset;
 
-            // set zero forces when manipulating objects
-            // tool->setDeviceGlobalForce(0.0, 0.0, -0.0);
-            tool->setDeviceGlobalForce(0.0, 0.0, -1.0);
+                // -----------------------------------------
+                // Current object state
+                // -----------------------------------------
 
-            tool->initialize();
+                btTransform trans;
+
+                selectedBulletObject
+                    ->m_bulletRigidBody
+                    ->getMotionState()
+                    ->getWorldTransform(trans);
+
+                btVector3 pos = trans.getOrigin();
+
+                cVector3d objectPos(
+                    pos.x(),
+                    pos.y(),
+                    pos.z());
+
+                btVector3 vel =
+                    selectedBulletObject->m_bulletRigidBody->getLinearVelocity();
+
+                cVector3d velocity(
+                    vel.x(),
+                    vel.y(),
+                    vel.z());
+                // -----------------------------------------
+                // Spring-damper coupling
+                // -----------------------------------------
+
+                double stiffness = 80.0;
+                double damping = 8.0;
+
+                cVector3d force =
+                    stiffness * (desiredPos - objectPos) - damping * velocity;
+
+                // -----------------------------------------
+                // Apply force to Bullet object
+                // -----------------------------------------
+
+                // selectedBulletObject->addExternalForce(force);
+
+                double mass =
+                    1.0 /
+                    selectedBulletObject
+                        ->m_bulletRigidBody
+                        ->getInvMass();
+
+                // heavier objects move less
+                double massScale =
+                    1.0 / (1.0 + mass * 8.0);
+
+                force *= massScale;
+
+                selectedBulletObject->addExternalForce(force);
+                // -----------------------------------------
+                // Apply reaction force to haptic device
+                // -----------------------------------------
+
+                tool->setDeviceGlobalForce(-force);
+
+                // optional:
+                // gravity feel based on mass
+                //
+                mass =
+                    selectedBulletObject->getMass();
+
+                tool->addDeviceGlobalForce(
+                    cVector3d(0, 0, -9.81 * mass));
+            }
         }
 
-        //
+        // =====================================================
         // STATE 3:
-        // Finalize Selection mode - operator releases user switch.
-        //
+        // Release object
+        // =====================================================
+
         else
         {
             state = IDLE;
+
+            selectedObject = nullptr;
+            selectedBulletObject = nullptr;
+
+            tool->setDeviceGlobalForce(0, 0, 0);
         }
 
         // update simulation

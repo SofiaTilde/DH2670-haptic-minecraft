@@ -9,6 +9,8 @@ inline double toolRadius = 0.06;
 // stiffness properties
 inline double maxStiffness;
 
+inline double maxMass = 0.3;
+
 inline double block_scale = 0.2;
 inline double box_scale = block_scale * 2;
 
