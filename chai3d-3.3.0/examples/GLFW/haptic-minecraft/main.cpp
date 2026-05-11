@@ -952,6 +952,7 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
             cBulletGenericObject *bulletObj = dynamic_cast<cBulletGenericObject *>(obj);
             if (bulletObj)
             {
+                bulletWorld->m_bulletWorld->removeRigidBody(bulletObj->m_bulletRigidBody);
                 bulletWorld->removeChild(obj);
                 // delete bulletObj;
             }
