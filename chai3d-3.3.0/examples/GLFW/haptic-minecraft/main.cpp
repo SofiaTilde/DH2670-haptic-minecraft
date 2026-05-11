@@ -957,7 +957,7 @@ void renderHaptics(void)
         {
             bulletWorld->computeGlobalPositions(true);
         }
-        catch (const std::exception& e)
+        catch (const std::exception &e)
         {
             cout << "Exception in computeGlobalPositions" << endl;
         }
@@ -1251,13 +1251,12 @@ void renderHaptics(void)
             tool->setDeviceGlobalForce(0, 0, 0);
         }
 
-
         try
         {
             // update simulation
             bulletWorld->updateDynamics(timeInterval);
         }
-        catch (const std::exception& e)
+        catch (const std::exception &e)
         {
             cout << "Exception in updateDynamics" << endl;
         }
