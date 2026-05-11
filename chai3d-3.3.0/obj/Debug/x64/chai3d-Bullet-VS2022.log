@@ -1,0 +1,171 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(538,5): warning MSB8028: The intermediate directory (obj/Debug/x64/) contains files shared from another project (chai3d.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Performing Custom Build Step
+  btAxisSweep3.cpp
+  btBroadphaseProxy.cpp
+  btCollisionAlgorithm.cpp
+  btDbvt.cpp
+  btDbvtBroadphase.cpp
+  btDispatcher.cpp
+  btMultiSapBroadphase.cpp
+  btOverlappingPairCache.cpp
+  btQuantizedBvh.cpp
+  btSimpleBroadphase.cpp
+  btActivatingCollisionAlgorithm.cpp
+  btBox2dBox2dCollisionAlgorithm.cpp
+  btBoxBoxCollisionAlgorithm.cpp
+  btBoxBoxDetector.cpp
+  btCollisionDispatcher.cpp
+  btCollisionObject.cpp
+  btCollisionWorld.cpp
+  btCollisionWorldImporter.cpp
+  btCompoundCollisionAlgorithm.cpp
+  btCompoundCompoundCollisionAlgorithm.cpp
+  btConvex2dConvex2dAlgorithm.cpp
+  btConvexConcaveCollisionAlgorithm.cpp
+  btConvexConvexAlgorithm.cpp
+  btConvexPlaneCollisionAlgorithm.cpp
+  btDefaultCollisionConfiguration.cpp
+  btEmptyCollisionAlgorithm.cpp
+  btGhostObject.cpp
+  btHashedSimplePairCache.cpp
+  btInternalEdgeUtility.cpp
+  btManifoldResult.cpp
+  btSimulationIslandManager.cpp
+  btSphereBoxCollisionAlgorithm.cpp
+  btSphereSphereCollisionAlgorithm.cpp
+  btSphereTriangleCollisionAlgorithm.cpp
+  btUnionFind.cpp
+  SphereTriangleDetector.cpp
+  btBox2dShape.cpp
+  btBoxShape.cpp
+  btBvhTriangleMeshShape.cpp
+  btCapsuleShape.cpp
+  btCollisionShape.cpp
+  btCompoundShape.cpp
+  btConcaveShape.cpp
+  btConeShape.cpp
+  btConvex2dShape.cpp
+  btConvexHullShape.cpp
+  btConvexInternalShape.cpp
+  btConvexPointCloudShape.cpp
+  btConvexPolyhedron.cpp
+  btConvexShape.cpp
+  btConvexTriangleMeshShape.cpp
+  btCylinderShape.cpp
+  btEmptyShape.cpp
+  btHeightfieldTerrainShape.cpp
+  btMinkowskiSumShape.cpp
+  btMultimaterialTriangleMeshShape.cpp
+  btMultiSphereShape.cpp
+  btOptimizedBvh.cpp
+  btPolyhedralConvexShape.cpp
+  btScaledBvhTriangleMeshShape.cpp
+  btShapeHull.cpp
+  btSphereShape.cpp
+  btStaticPlaneShape.cpp
+  btStridingMeshInterface.cpp
+  btTetrahedronShape.cpp
+  btTriangleBuffer.cpp
+  btTriangleCallback.cpp
+  btTriangleIndexVertexArray.cpp
+  btTriangleIndexVertexMaterialArray.cpp
+  btTriangleMesh.cpp
+  btTriangleMeshShape.cpp
+  btUniformScalingShape.cpp
+  btContactProcessing.cpp
+  btGenericPoolAllocator.cpp
+  btGImpactBvh.cpp
+  btGImpactCollisionAlgorithm.cpp
+  btGImpactQuantizedBvh.cpp
+  btGImpactShape.cpp
+  btTriangleShapeEx.cpp
+  gim_box_set.cpp
+  gim_contact.cpp
+  gim_memory.cpp
+  gim_tri_collision.cpp
+  btContinuousConvexCollision.cpp
+  btConvexCast.cpp
+  btGjkConvexCast.cpp
+  btGjkEpa2.cpp
+  btGjkEpaPenetrationDepthSolver.cpp
+  btGjkPairDetector.cpp
+  btMinkowskiPenetrationDepthSolver.cpp
+  btPersistentManifold.cpp
+  btPolyhedralContactClipping.cpp
+  btRaycastCallback.cpp
+  btSubSimplexConvexCast.cpp
+  btVoronoiSimplexSolver.cpp
+  btKinematicCharacterController.cpp
+  btConeTwistConstraint.cpp
+  btContactConstraint.cpp
+  btFixedConstraint.cpp
+  btGearConstraint.cpp
+  btGeneric6DofConstraint.cpp
+  btGeneric6DofSpring2Constraint.cpp
+  btGeneric6DofSpringConstraint.cpp
+  btHinge2Constraint.cpp
+  btHingeConstraint.cpp
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': Alignment specifier is less than actual alignment (128), and will be ignored.
+  (compiling source file 'externals/bullet/src/BulletDynamics/ConstraintSolver/btContactConstraint.cpp')
+  
+  btNNCGConstraintSolver.cpp
+  btPoint2PointConstraint.cpp
+  btSequentialImpulseConstraintSolver.cpp
+  btSliderConstraint.cpp
+  btSolve2LinearConstraint.cpp
+  btTypedConstraint.cpp
+  btUniversalConstraint.cpp
+  btDiscreteDynamicsWorld.cpp
+  btRigidBody.cpp
+  btSimpleDynamicsWorld.cpp
+  btMultiBody.cpp
+  btMultiBodyConstraint.cpp
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': Alignment specifier is less than actual alignment (128), and will be ignored.
+  (compiling source file 'externals/bullet/src/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.cpp')
+  
+  btMultiBodyConstraintSolver.cpp
+  btMultiBodyDynamicsWorld.cpp
+  btMultiBodyJointLimitConstraint.cpp
+  btMultiBodyJointMotor.cpp
+  btMultiBodyPoint2Point.cpp
+  btDantzigLCP.cpp
+  btLemkeAlgorithm.cpp
+  btMLCPSolver.cpp
+  btRaycastVehicle.cpp
+  btWheelInfo.cpp
+  btDefaultSoftBodySolver.cpp
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5): warning C4473: 'printf' : not enough arguments passed for format string
+      C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5):
+      placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+      C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5):
+      the missing variadic argument 2 is required by format string '% s'
+  
+  btSoftBody.cpp
+  btSoftBodyConcaveCollisionAlgorithm.cpp
+  btSoftBodyHelpers.cpp
+  btSoftBodyRigidBodyCollisionConfiguration.cpp
+  btSoftRigidCollisionAlgorithm.cpp
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': Alignment specifier is less than actual alignment (128), and will be ignored.
+  (compiling source file 'externals/bullet/src/BulletDynamics/Vehicle/btRaycastVehicle.cpp')
+  
+  btSoftRigidDynamicsWorld.cpp
+  btSoftSoftCollisionAlgorithm.cpp
+  btAlignedAllocator.cpp
+  btConvexHull.cpp
+  btConvexHullComputer.cpp
+  btGeometryUtil.cpp
+  btPolarDecomposition.cpp
+  btQuickprof.cpp
+  btSerializer.cpp
+  btVector3.cpp
+  CBulletBox.cpp
+  CBulletCylinder.cpp
+  CBulletGenericObject.cpp
+  CBulletMesh.cpp
+  CBulletMultiMesh.cpp
+  CBulletSphere.cpp
+  CBulletStaticPlane.cpp
+  CBulletVehicle.cpp
+  CBulletWorld.cpp
+  clew.c
+LINK : fatal error LNK1181: cannot open input file 'obj\Debug\x64\btAxisSweep3.obj'

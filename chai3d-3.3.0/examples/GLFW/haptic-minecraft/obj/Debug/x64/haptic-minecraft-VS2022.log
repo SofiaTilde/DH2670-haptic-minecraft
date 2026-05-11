@@ -1,0 +1,44 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(538,5): warning MSB8028: The intermediate directory (obj/Debug/x64/) contains files shared from another project (Haptic Minecraft 2.vcxproj, haptic-minecraft.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  main.cpp
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(270,10): warning C5033: 'register' is no longer a supported storage class
+  (compiling source file 'main.cpp')
+      C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(270,10):
+      the template instantiation context (the oldest one first) is
+          C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletCollision\Gimpact\btGImpactShape.h(915,48):
+          see reference to class template instantiation 'btAlignedObjectArray<btGImpactMeshShapePart *>' being compiled
+          C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(268,26):
+          while compiling class template member function 'void btAlignedObjectArray<btGImpactMeshShapePart *>::push_back(const T &)'
+          with
+          [
+              T=btGImpactMeshShapePart *
+          ]
+              C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletCollision\Gimpact\btGImpactShape.h(921,26):
+              see the first reference to 'btAlignedObjectArray<btGImpactMeshShapePart *>::push_back' in 'btGImpactMeshShape::buildMeshParts'
+  
+C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(214,10): warning C5033: 'register' is no longer a supported storage class
+  (compiling source file 'main.cpp')
+      C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(214,10):
+      the template instantiation context (the oldest one first) is
+          C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletCollision\CollisionShapes\btTriangleInfoMap.h(58,35):
+          see reference to class template instantiation 'btHashMap<btHashInt,btTriangleInfo>' being compiled
+          C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btHashMap.h(227,31):
+          see reference to class template instantiation 'btAlignedObjectArray<Value>' being compiled
+          with
+          [
+              Value=btTriangleInfo
+          ]
+          C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\LinearMath\btAlignedObjectArray.h(212,26):
+          while compiling class template member function 'void btAlignedObjectArray<Value>::resize(int,const T &)'
+          with
+          [
+              Value=btTriangleInfo,
+              T=btTriangleInfo
+          ]
+              C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\externals\bullet\src\BulletCollision\CollisionShapes\btTriangleInfoMap.h(224,21):
+              see the first reference to 'btAlignedObjectArray<Value>::resize' in 'btTriangleInfoMap::deSerialize'
+          with
+          [
+              Value=btTriangleInfo
+          ]
+  
+  haptic-minecraft-VS2022.vcxproj -> C:\Users\sofia\Desktop\KTH\Årskurs 5\Läsperiod 4\DH2670 Haptisk och taktil interaktionsteknik\DH2670-haptic-minecraft\chai3d-3.3.0\bin\win-x64\Haptic Minecraft.exe
