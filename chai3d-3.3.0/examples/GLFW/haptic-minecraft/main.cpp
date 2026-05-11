@@ -830,6 +830,21 @@ void onKeyCallback(GLFWwindow *a_window, int a_key, int a_scancode, int a_action
     {
         bulletWorld->addChild(Blocks::grassBlock());
     }
+
+    else if ((a_key == GLFW_KEY_1))
+    {
+        int keep = 5;
+        while (bulletWorld->getNumChildren() > keep)
+        {
+            cGenericObject *obj = bulletWorld->getChild(keep);
+            cBulletGenericObject *bulletObj = dynamic_cast<cBulletGenericObject *>(obj);
+            if (bulletObj)
+            {
+                bulletWorld->removeChild(obj);
+                // delete bulletObj;
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
