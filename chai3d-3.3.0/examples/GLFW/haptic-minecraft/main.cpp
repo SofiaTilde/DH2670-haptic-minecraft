@@ -953,7 +953,14 @@ void renderHaptics(void)
         /////////////////////////////////////////////////////////////////////
 
         // compute global reference frames for each object
-        bulletWorld->computeGlobalPositions(true);
+        try
+        {
+            bulletWorld->computeGlobalPositions(true);
+        }
+        catch (const std::exception& e)
+        {
+            cout << "Exception in computeGlobalPositions" << endl;
+        }
 
         // update position and orientation of tool
         tool->updateFromDevice();
@@ -1244,8 +1251,16 @@ void renderHaptics(void)
             tool->setDeviceGlobalForce(0, 0, 0);
         }
 
-        // update simulation
-        bulletWorld->updateDynamics(timeInterval);
+
+        try
+        {
+            // update simulation
+            bulletWorld->updateDynamics(timeInterval);
+        }
+        catch (const std::exception& e)
+        {
+            cout << "Exception in updateDynamics" << endl;
+        }
     }
 
     // exit haptics thread
