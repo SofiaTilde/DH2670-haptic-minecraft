@@ -127,6 +127,34 @@ cAudioDevice *audioDevice;
 
 cAudioBuffer *audioBufferDirt;
 cAudioSource *audioSourceDirt;
+cAudioBuffer *audioBufferGrass;
+cAudioSource *audioSourceGrass;
+cAudioBuffer *audioBufferGravelClay;
+cAudioSource *audioSourceGravelClay;
+cAudioBuffer *audioBufferHay;
+cAudioSource *audioSourceHay;
+cAudioBuffer *audioBufferHoney;
+cAudioSource *audioSourceHoney;
+cAudioBuffer *audioBufferIce;
+cAudioSource *audioSourceIce;
+cAudioBuffer *audioBufferMud;
+cAudioSource *audioSourceMud;
+cAudioBuffer *audioBufferPackedMud;
+cAudioSource *audioSourcePackedMud;
+cAudioBuffer *audioBufferSand;
+cAudioSource *audioSourceSand;
+cAudioBuffer *audioBufferSlime;
+cAudioSource *audioSourceSlime;
+cAudioBuffer *audioBufferStone;
+cAudioSource *audioSourceStone;
+cAudioBuffer *audioBufferTnt;
+cAudioSource *audioSourceTnt;
+cAudioBuffer *audioBufferWarpedPlanks;
+cAudioSource *audioSourceWarpedPlanks;
+cAudioBuffer *audioBufferWood;
+cAudioSource *audioSourceWood;
+cAudioBuffer *audioBufferWool;
+cAudioSource *audioSourceWool;
 
 // flag to indicate if the haptic simulation currently running
 bool simulationRunning = false;
@@ -423,7 +451,7 @@ int main(int argc, char *argv[])
     audioBufferDirt = new cAudioBuffer();
 
     // Add this check to see if the file actually loads
-    bool fileLoaded = audioBufferDirt->loadFromFile("./Sounds/dirt2.wav");
+    bool fileLoaded = audioBufferDirt->loadFromFile("./Sounds/dirt.wav");
     /// haptic-minecraft/Sounds/dirt.wav
     /// haptic-minecraft/main.cpp
     if (!fileLoaded)
@@ -432,16 +460,100 @@ int main(int argc, char *argv[])
         cout << "ERROR: COULD NOT FIND Sounds/dirt.wav!" << endl;
         cout << "=========================================\n\n";
     }
-    else
-    {
-        cout << "\n=========================================\n";
-        cout << "SUCCESS: AUDIO FILE LOADED!" << endl;
-        cout << "=========================================\n\n";
-    }
+    // else
+    // {
+    //     cout << "\n=========================================\n";
+    //     cout << "SUCCESS: AUDIO FILE LOADED!" << endl;
+    //     cout << "=========================================\n\n";
+    // }
 
     // create audio source and link it to the buffer
     audioSourceDirt = new cAudioSource();
     audioSourceDirt->setAudioBuffer(audioBufferDirt);
+
+    // grass
+    audioBufferGrass = new cAudioBuffer();
+    audioBufferGrass->loadFromFile("./Sounds/grass.wav");
+    audioSourceGrass = new cAudioSource();
+    audioSourceGrass->setAudioBuffer(audioBufferGrass);
+
+    // gravel/clay
+    audioBufferGravelClay = new cAudioBuffer();
+    audioBufferGravelClay->loadFromFile("./Sounds/gravelclay.wav");
+    audioSourceGravelClay = new cAudioSource();
+    audioSourceGravelClay->setAudioBuffer(audioBufferGravelClay);
+
+    // hay
+    audioBufferHay = new cAudioBuffer();
+    audioBufferHay->loadFromFile("./Sounds/hay.wav");
+    audioSourceHay = new cAudioSource();
+    audioSourceHay->setAudioBuffer(audioBufferHay);
+
+    // honey
+    audioBufferHoney = new cAudioBuffer();
+    audioBufferHoney->loadFromFile("./Sounds/honey.wav");
+    audioSourceHoney = new cAudioSource();
+    audioSourceHoney->setAudioBuffer(audioBufferHoney);
+
+    // ice
+    audioBufferIce = new cAudioBuffer();
+    audioBufferIce->loadFromFile("./Sounds/ice.wav");
+    audioSourceIce = new cAudioSource();
+    audioSourceIce->setAudioBuffer(audioBufferIce);
+
+    // mud
+    audioBufferMud = new cAudioBuffer();
+    audioBufferMud->loadFromFile("./Sounds/mud.wav");
+    audioSourceMud = new cAudioSource();
+    audioSourceMud->setAudioBuffer(audioBufferMud);
+
+    // packedmud
+    audioBufferPackedMud = new cAudioBuffer();
+    audioBufferPackedMud->loadFromFile("./Sounds/packedmud.wav");
+    audioSourcePackedMud = new cAudioSource();
+    audioSourcePackedMud->setAudioBuffer(audioBufferPackedMud);
+
+    // sand
+    audioBufferSand = new cAudioBuffer();
+    audioBufferSand->loadFromFile("./Sounds/sand.wav");
+    audioSourceSand = new cAudioSource();
+    audioSourceSand->setAudioBuffer(audioBufferSand);
+
+    // slime
+    audioBufferSlime = new cAudioBuffer();
+    audioBufferSlime->loadFromFile("./Sounds/slime.wav");
+    audioSourceSlime = new cAudioSource();
+    audioSourceSlime->setAudioBuffer(audioBufferSlime);
+
+    // stone
+    audioBufferStone = new cAudioBuffer();
+    audioBufferStone->loadFromFile("./Sounds/stone.wav");
+    audioSourceStone = new cAudioSource();
+    audioSourceStone->setAudioBuffer(audioBufferStone);
+
+    // tnt
+    audioBufferTnt = new cAudioBuffer();
+    audioBufferTnt->loadFromFile("./Sounds/tnt.wav");
+    audioSourceTnt = new cAudioSource();
+    audioSourceTnt->setAudioBuffer(audioBufferTnt);
+
+    // warpedPlanks
+    audioBufferWarpedPlanks = new cAudioBuffer();
+    audioBufferWarpedPlanks->loadFromFile("./Sounds/warpedPlanks.wav");
+    audioSourceWarpedPlanks = new cAudioSource();
+    audioSourceWarpedPlanks->setAudioBuffer(audioBufferWarpedPlanks);
+
+    // wood
+    audioBufferWood = new cAudioBuffer();
+    audioBufferWood->loadFromFile("./Sounds/wood.wav");
+    audioSourceWood = new cAudioSource();
+    audioSourceWood->setAudioBuffer(audioBufferWood);
+
+    // wool
+    audioBufferWool = new cAudioBuffer();
+    audioBufferWool->loadFromFile("./Sounds/wool.wav");
+    audioSourceWool = new cAudioSource();
+    audioSourceWool->setAudioBuffer(audioBufferWool);
 
     //-----------------------------------------------------------------------
     // HAPTIC DEVICES / TOOLS
@@ -1155,7 +1267,55 @@ void renderHaptics(void)
 
                         state = SELECTION;
 
-                        audioSourceDirt->play();
+                        // audioSourceDirt->play();
+                        switch ((int)(intptr_t)object->m_userData)
+                        {
+                        case 0:
+                            audioSourceDirt->play();
+                            break;
+                        case 1:
+                            audioSourceGrass->play();
+                            break;
+                        case 2:
+                            audioSourceGravelClay->play();
+                            break;
+                        case 3:
+                            audioSourceHay->play();
+                            break;
+                        case 4:
+                            audioSourceHoney->play();
+                            break;
+                        case 5:
+                            audioSourceIce->play();
+                            break;
+                        case 6:
+                            audioSourceMud->play();
+                            break;
+                        case 7:
+                            audioSourcePackedMud->play();
+                            break;
+                        case 8:
+                            audioSourceSand->play();
+                            break;
+                        case 9:
+                            audioSourceSlime->play();
+                            break;
+                        case 10:
+                            audioSourceStone->play();
+                            break;
+                        case 11:
+                            audioSourceTnt->play();
+                            break;
+                        case 12:
+                            audioSourceWarpedPlanks->play();
+                            break;
+                        case 13:
+                            audioSourceWood->play();
+                            break;
+                        case 14:
+                            audioSourceWool->play();
+                            break;
+                        }
                     }
                 }
             }

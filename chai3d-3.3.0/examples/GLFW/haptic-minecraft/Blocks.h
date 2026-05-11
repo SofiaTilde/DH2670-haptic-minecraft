@@ -10,6 +10,7 @@ private:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)0;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -37,6 +38,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)5;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.7; // default:0.3  range:0-1
@@ -62,6 +64,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)5;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.7; // default:0.3  range:0-1
@@ -87,6 +90,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)5;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.7; // default:0.3  range:0-1
@@ -112,6 +116,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)6;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.1; // default:0.3  range:0-1
@@ -137,6 +142,7 @@ public:
         // cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)4;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.1; // default:0.3  range:0-1
@@ -162,6 +168,7 @@ public:
         // cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)3;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.1; // default:0.3  range:0-1
@@ -187,6 +194,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)9;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.1; // default:0.3  range:0-1
@@ -212,6 +220,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)2;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -237,6 +246,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)8;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -262,6 +272,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)2;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -287,6 +298,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)7;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -312,6 +324,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)10;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -337,6 +350,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)10;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -362,6 +376,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)10;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -387,6 +402,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)0;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -412,6 +428,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)3;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -437,6 +454,7 @@ public:
         // cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)11;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -462,6 +480,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)13;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -487,6 +506,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)13;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -512,6 +532,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)13;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -537,6 +558,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)12;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -562,6 +584,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)14;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -587,6 +610,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)14;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -612,6 +636,7 @@ public:
         cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         // cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)14;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
@@ -637,6 +662,7 @@ public:
         // cBulletBox *block = BlockSetup::newSimpleBlock(imageName);
         cBulletBox *block = BlockSetup::newTopBlock(imageName);
         // cBulletBox *block = BlockSetup::newFullBlock(imageName);
+        block->m_userData = (void *)1;
 
         /** how hard the object feels on contact (0=soft, higher=hard/stiff, ~500–3000 typical) */
         double stiffness = 0.3; // default:0.3  range:0-1
